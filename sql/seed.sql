@@ -9,12 +9,12 @@ USE xiaoyuan_huodong;
 --   organizer123 -> organizer
 --   student123  -> student
 INSERT INTO user (username, password, real_name, email, role) VALUES
-('admin',        'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'System Admin',     'admin@xiaoyuan.edu',    'admin'),
-('organizer1',   'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Zhang Organizer',  'organizer1@xiaoyuan.edu', 'organizer'),
-('organizer2',   'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Li Organizer',     'organizer2@xiaoyuan.edu', 'organizer'),
-('student1',     'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Wang Student',     'student1@xiaoyuan.edu',  'student'),
-('student2',     'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Liu Student',      'student2@xiaoyuan.edu',  'student'),
-('student3',     'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Chen Student',     'student3@xiaoyuan.edu',  'student');
+('admin',        'e8213c805db747ff3631e919232f3ad6dce8b33ea26ee77414ab98267e4784c9', 'System Admin',     'admin@xiaoyuan.edu',    'admin'),
+('organizer1',   'ea61bbf8dae5bd6d365b2e3e921ba77092b5ebe859bfb45a098ee597987dc673', 'Zhang Organizer',  'organizer1@xiaoyuan.edu', 'organizer'),
+('organizer2',   'ea61bbf8dae5bd6d365b2e3e921ba77092b5ebe859bfb45a098ee597987dc673', 'Li Organizer',     'organizer2@xiaoyuan.edu', 'organizer'),
+('student1',     '72637d9eaaac826e9a7f2ef084133c6b55d59266f10937b42ab4dafbdd97b0a1', 'Wang Student',     'student1@xiaoyuan.edu',  'student'),
+('student2',     '72637d9eaaac826e9a7f2ef084133c6b55d59266f10937b42ab4dafbdd97b0a1', 'Liu Student',      'student2@xiaoyuan.edu',  'student'),
+('student3',     '72637d9eaaac826e9a7f2ef084133c6b55d59266f10937b42ab4dafbdd97b0a1', 'Chen Student',     'student3@xiaoyuan.edu',  'student');
 
 -- Activity categories
 INSERT INTO activity_category (name, description) VALUES

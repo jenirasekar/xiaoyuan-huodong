@@ -10,9 +10,9 @@ import java.sql.SQLException;
  */
 public class DBConnectionManager {
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/xiaoyuan_huodong?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf8mb4";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/xiaoyuan_huodong?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "root";
+    private static final String DB_PASSWORD = "0713";
 
     static {
         try {
