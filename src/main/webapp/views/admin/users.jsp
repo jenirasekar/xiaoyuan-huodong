@@ -54,7 +54,7 @@
                 </td>
                 <td class="px-4 py-3">
                     <div class="flex items-center gap-1">
-                        <button onclick="editUser(<%= u.getId() %>, '<%= u.getUsername() %>', '<%= u.getRealName() %>', '<%= u.getEmail() != null ? u.getEmail() : "" %>', '<%= u.getRole() %>')"
+                        <button onclick="editUser(<%= u.getId() %>, '<%= u.getUsername().replace("'", "\\'") %>', '<%= u.getRealName().replace("'", "\\'") %>', '<%= (u.getEmail() != null ? u.getEmail() : "").replace("'", "\\'") %>', '<%= u.getRole() %>')"
                                 class="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100">Edit</button>
                         <form method="post" action="<%= contextPath %>/admin/users" class="inline" onsubmit="return confirm('Reset password to 123456?')">
                             <input type="hidden" name="action" value="resetPassword">

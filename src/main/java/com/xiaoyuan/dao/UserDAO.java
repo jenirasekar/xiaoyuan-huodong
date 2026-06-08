@@ -119,7 +119,7 @@ public class UserDAO {
      * Update an existing user.
      */
     public boolean update(User user) throws SQLException {
-        StringBuilder sql = new StringBuilder("UPDATE user SET real_name = ?, email = ?, role = ?");
+        StringBuilder sql = new StringBuilder("UPDATE user SET username = ?, real_name = ?, email = ?, role = ?");
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             sql.append(", password = ?");
         }
@@ -128,6 +128,7 @@ public class UserDAO {
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int idx = 1;
+            stmt.setString(idx++, user.getUsername());
             stmt.setString(idx++, user.getRealName());
             stmt.setString(idx++, user.getEmail());
             stmt.setString(idx++, user.getRole());

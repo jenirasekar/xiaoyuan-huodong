@@ -80,6 +80,7 @@ public class UserManageServlet extends HttpServlet {
             }
         } else {
             user = userDAO.findById(Integer.parseInt(idStr));
+            user.setUsername(req.getParameter("username"));
             if (req.getParameter("password") != null && !req.getParameter("password").isEmpty()) {
                 user.setPassword(PasswordUtil.hash(req.getParameter("password")));
             }
