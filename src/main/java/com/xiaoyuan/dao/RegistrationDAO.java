@@ -17,7 +17,7 @@ public class RegistrationDAO {
      */
     public Registration findByStudentAndActivity(int studentId, int activityId) throws SQLException {
         String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
-                "a.activity_time, a.location AS activity_location, " +
+                "a.activity_time, a.location AS activity_location, a.status AS activity_status, " +
                 "(SELECT COUNT(*) FROM checkin c WHERE c.registration_id = r.id) > 0 AS checked_in " +
                 "FROM registration r " +
                 "JOIN user u ON r.student_id = u.id " +
@@ -40,7 +40,7 @@ public class RegistrationDAO {
      */
     public Registration findById(int id) throws SQLException {
         String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
-                "a.activity_time, a.location AS activity_location, " +
+                "a.activity_time, a.location AS activity_location, a.status AS activity_status, " +
                 "(SELECT COUNT(*) FROM checkin c WHERE c.registration_id = r.id) > 0 AS checked_in " +
                 "FROM registration r " +
                 "JOIN user u ON r.student_id = u.id " +
@@ -61,7 +61,7 @@ public class RegistrationDAO {
      */
     public List<Registration> findByStudent(int studentId) throws SQLException {
         String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
-                "a.activity_time, a.location AS activity_location, " +
+                "a.activity_time, a.location AS activity_location, a.status AS activity_status, " +
                 "(SELECT COUNT(*) FROM checkin c WHERE c.registration_id = r.id) > 0 AS checked_in " +
                 "FROM registration r " +
                 "JOIN user u ON r.student_id = u.id " +
@@ -85,7 +85,7 @@ public class RegistrationDAO {
      */
     public List<Registration> findByActivity(int activityId) throws SQLException {
         String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
-                "a.activity_time, a.location AS activity_location, " +
+                "a.activity_time, a.location AS activity_location, a.status AS activity_status, " +
                 "(SELECT COUNT(*) FROM checkin c WHERE c.registration_id = r.id) > 0 AS checked_in " +
                 "FROM registration r " +
                 "JOIN user u ON r.student_id = u.id " +
@@ -109,7 +109,7 @@ public class RegistrationDAO {
      */
     public List<Registration> findAll(int offset, int limit) throws SQLException {
         String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
-                "a.activity_time, a.location AS activity_location, " +
+                "a.activity_time, a.location AS activity_location, a.status AS activity_status, " +
                 "(SELECT COUNT(*) FROM checkin c WHERE c.registration_id = r.id) > 0 AS checked_in " +
                 "FROM registration r " +
                 "JOIN user u ON r.student_id = u.id " +
@@ -211,7 +211,7 @@ public class RegistrationDAO {
      */
     public List<Registration> findApprovedByActivity(int activityId) throws SQLException {
         String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
-                "a.activity_time, a.location AS activity_location, " +
+                "a.activity_time, a.location AS activity_location, a.status AS activity_status, " +
                 "(SELECT COUNT(*) FROM checkin c WHERE c.registration_id = r.id) > 0 AS checked_in " +
                 "FROM registration r " +
                 "JOIN user u ON r.student_id = u.id " +
@@ -247,6 +247,7 @@ public class RegistrationDAO {
         r.setActivityTitle(rs.getString("activity_title"));
         r.setActivityTime(rs.getTimestamp("activity_time").toLocalDateTime());
         r.setActivityLocation(rs.getString("activity_location"));
+        r.setActivityStatus(rs.getString("activity_status"));
         r.setCheckedIn(rs.getBoolean("checked_in"));
         return r;
     }

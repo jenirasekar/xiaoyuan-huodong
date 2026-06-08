@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="../common/header.jsp" %>
-<%@ page import="com.xiaoyuan.model.Activity, java.time.format.DateTimeFormatter" %>
+<%@ page import="com.xiaoyuan.model.Activity, com.xiaoyuan.model.Registration, java.time.format.DateTimeFormatter" %>
 <%
     Activity activity = (Activity) request.getAttribute("activity");
+    Registration myRegistration = (Registration) request.getAttribute("myRegistration");
     if (activity == null) {
         response.sendRedirect(contextPath + "/activities");
         return;
@@ -14,6 +15,12 @@
     <div class="mb-4">
         <a href="<%= contextPath %>/activities" class="text-blue-600 hover:underline text-sm">← Back to Activities</a>
     </div>
+
+    <% if ("cancelled".equals(activity.getStatus())) { %>
+    <div class="mb-4 p-4 bg-red-50 border border-red-300 text-red-700 rounded-lg font-medium text-center">
+        🚫 This activity has been cancelled by the organizer.
+    </div>
+    <% } %>
 
     <div class="bg-white rounded-lg shadow">
         <div class="p-6 border-b border-gray-200">
@@ -66,21 +73,42 @@
 
                 <div class="mt-6">
                     <% if ("student".equals(session.getAttribute("role"))) { %>
-                        <% if (activity.isRegistrationOpen() && !activity.isFull()) { %>
-                            <form action="<%= contextPath %>/registrations" method="post">
-                                <input type="hidden" name="activityId" value="<%= activity.getId() %>">
-                                <button type="submit" class="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
-                                    Register Now
+                        <%-- Already registered — show status --%>
+                        <% if (myRegistration != null) { %>
+                            <div class="w-full py-3 bg-blue-50 border border-blue-200 text-blue-700 font-medium rounded-lg text-center">
+                                <% if ("pending".equals(myRegistration.getStatus())) { %>
+                                    ⏳ Registration pending review
+                                <% } else if ("approved".equals(myRegistration.getStatus())) { %>
+                                    ✅ Registration approved
+                                <% } else { %>
+                                    ❌ Registration rejected
+                                <% } %>
+                            </div>
+                        <% } else { %>
+                            <%-- Time conflict warning --%>
+                            <% Boolean timeConflict = (Boolean) request.getAttribute("timeConflict"); %>
+                            <% if (timeConflict != null && timeConflict) { %>
+                                <div class="w-full py-2 mb-3 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm rounded-lg text-center">
+                                    ⚠️ This activity conflicts with another activity you are registered for (within 1 hour).
+                                </div>
+                            <% } %>
+                            <%-- Not registered yet --%>
+                            <% if (activity.isRegistrationOpen() && !activity.isFull()) { %>
+                                <form action="<%= contextPath %>/registrations" method="post">
+                                    <input type="hidden" name="activityId" value="<%= activity.getId() %>">
+                                    <button type="submit" class="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                                        Register Now
+                                    </button>
+                                </form>
+                            <% } else if (activity.isFull()) { %>
+                                <button disabled class="w-full py-3 bg-gray-300 text-gray-500 font-medium rounded-lg cursor-not-allowed">
+                                    Registration Full
                                 </button>
-                            </form>
-                        <% } else if (activity.isFull()) { %>
-                            <button disabled class="w-full py-3 bg-gray-300 text-gray-500 font-medium rounded-lg cursor-not-allowed">
-                                Registration Full
-                            </button>
-                        <% } else if (!activity.isRegistrationOpen()) { %>
-                            <button disabled class="w-full py-3 bg-gray-300 text-gray-500 font-medium rounded-lg cursor-not-allowed">
-                                Registration Closed
-                            </button>
+                            <% } else if (!activity.isRegistrationOpen()) { %>
+                                <button disabled class="w-full py-3 bg-gray-300 text-gray-500 font-medium rounded-lg cursor-not-allowed">
+                                    Registration Closed
+                                </button>
+                            <% } %>
                         <% } %>
                     <% } else { %>
                         <p class="text-sm text-gray-500 text-center">Only students can register for activities.</p>

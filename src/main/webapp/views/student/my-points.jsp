@@ -41,7 +41,7 @@
                 <tbody class="divide-y divide-gray-200">
                     <% for (PointRecord pr : myRecords) { %>
                     <tr>
-                        <td class="px-4 py-3 text-sm"><%= pr.getActivityTitle() %></td>
+                        <td class="px-4 py-3 text-sm"><%= pr.getActivityTitle() != null ? pr.getActivityTitle() : "(Activity deleted)" %></td>
                         <td class="px-4 py-3">
                             <span class="text-sm font-medium text-green-600">+<%= pr.getPoints() %></span>
                         </td>

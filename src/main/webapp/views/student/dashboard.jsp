@@ -83,7 +83,12 @@
         <tbody class="divide-y divide-gray-200">
             <% for (com.xiaoyuan.model.Registration reg : myRegs) { %>
             <tr>
-                <td class="px-4 py-3 text-sm"><%= reg.getActivityTitle() %></td>
+                <td class="px-4 py-3 text-sm">
+                    <%= reg.getActivityTitle() %>
+                    <% if (reg.getActivityStatus() != null && "cancelled".equals(reg.getActivityStatus())) { %>
+                        <span class="ml-1 px-1.5 py-0.5 text-xs font-medium rounded bg-red-100 text-red-600">Cancelled</span>
+                    <% } %>
+                </td>
                 <td class="px-4 py-3">
                     <% if ("approved".equals(reg.getStatus())) { %>
                         <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700">Approved</span>

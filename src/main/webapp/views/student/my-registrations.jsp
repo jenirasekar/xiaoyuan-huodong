@@ -35,7 +35,12 @@
             <% for (Registration reg : registrations) { %>
             <tr class="hover:bg-gray-50">
                 <td class="px-4 py-3">
-                    <div class="text-sm font-medium text-gray-800"><%= reg.getActivityTitle() %></div>
+                    <div class="text-sm font-medium text-gray-800">
+                        <%= reg.getActivityTitle() %>
+                        <% if (reg.getActivityStatus() != null && "cancelled".equals(reg.getActivityStatus())) { %>
+                            <span class="ml-1 px-1.5 py-0.5 text-xs font-medium rounded bg-red-100 text-red-600">Cancelled</span>
+                        <% } %>
+                    </div>
                     <div class="text-xs text-gray-500">📍 <%= reg.getActivityLocation() %></div>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-500"><%= reg.getActivityTime().format(dtf) %></td>

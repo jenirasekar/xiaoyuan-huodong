@@ -2,6 +2,7 @@ package com.xiaoyuan.servlet;
 
 import com.xiaoyuan.dao.ActivityCategoryDAO;
 import com.xiaoyuan.dao.ActivityDAO;
+import com.xiaoyuan.dao.PointRecordDAO;
 import com.xiaoyuan.model.Activity;
 import com.xiaoyuan.model.User;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ public class ActivityManageServlet extends HttpServlet {
 
     private final ActivityDAO activityDAO = new ActivityDAO();
     private final ActivityCategoryDAO categoryDAO = new ActivityCategoryDAO();
+    private final PointRecordDAO pointRecordDAO = new PointRecordDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -158,7 +160,10 @@ public class ActivityManageServlet extends HttpServlet {
     private void deleteActivity(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         int id = Integer.parseInt(req.getParameter("id"));
-        activityDAO.delete(id);
-        resp.sendRedirect(req.getContextPath() + "/manage-activities?deleted=true");
+        // Soft-delete: set status to "cancelled" so students still see it
+        activityDAO.updateStatus(id, "cancelled");
+        // Remove points earned from this activity
+        pointRecordDAO.deleteByActivity(id);
+        resp.sendRedirect(req.getContextPath() + "/manage-activities?cancelled=true");
     }
 }

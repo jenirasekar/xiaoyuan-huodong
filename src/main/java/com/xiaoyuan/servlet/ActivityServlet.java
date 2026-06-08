@@ -2,7 +2,9 @@ package com.xiaoyuan.servlet;
 
 import com.xiaoyuan.dao.ActivityCategoryDAO;
 import com.xiaoyuan.dao.ActivityDAO;
+import com.xiaoyuan.dao.RegistrationDAO;
 import com.xiaoyuan.model.Activity;
+import com.xiaoyuan.model.Registration;
 import com.xiaoyuan.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
@@ -18,6 +20,7 @@ public class ActivityServlet extends HttpServlet {
 
     private final ActivityDAO activityDAO = new ActivityDAO();
     private final ActivityCategoryDAO categoryDAO = new ActivityCategoryDAO();
+    private final RegistrationDAO registrationDAO = new RegistrationDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -75,12 +78,33 @@ public class ActivityServlet extends HttpServlet {
             throws Exception {
         int id = Integer.parseInt(req.getParameter("id"));
         Activity activity = activityDAO.findById(id);
-        if (activity == null || !"published".equals(activity.getStatus())) {
+        if (activity == null) {
+            req.setAttribute("error", "Activity not found.");
+            req.getRequestDispatcher("/views/common/error.jsp").forward(req, resp);
+            return;
+        }
+
+        // Check if current student has a registration — if so, allow viewing even if cancelled
+        User user = (User) req.getSession().getAttribute("user");
+        Registration myReg = null;
+        boolean timeConflict = false;
+        if (user != null && "student".equals(user.getRole())) {
+            myReg = registrationDAO.findByStudentAndActivity(user.getId(), id);
+            if (myReg == null) {
+                timeConflict = activityDAO.hasTimeConflict(user.getId(), activity.getActivityTime());
+            }
+        }
+
+        // Block non-published activities unless the student is registered for it
+        if (!"published".equals(activity.getStatus()) && myReg == null) {
             req.setAttribute("error", "Activity not found or not available.");
             req.getRequestDispatcher("/views/common/error.jsp").forward(req, resp);
             return;
         }
+
         req.setAttribute("activity", activity);
+        req.setAttribute("myRegistration", myReg);
+        req.setAttribute("timeConflict", timeConflict);
         req.getRequestDispatcher("/views/student/activity-detail.jsp").forward(req, resp);
     }
 }

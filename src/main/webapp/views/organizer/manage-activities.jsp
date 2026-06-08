@@ -55,10 +55,10 @@
                     <div class="flex items-center gap-1">
                         <a href="<%= contextPath %>/manage-activities?action=edit&id=<%= act.getId() %>"
                            class="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100">Edit</a>
-                        <form method="post" action="<%= contextPath %>/manage-activities" class="inline" onsubmit="return confirm('Delete this activity?')">
+                        <form method="post" action="<%= contextPath %>/manage-activities" class="inline" onsubmit="return confirm('Cancel this activity?\n\nRegistrations and check-in records will be preserved. Students will see this activity as cancelled.')">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="<%= act.getId() %>">
-                            <button type="submit" class="text-xs px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100">Del</button>
+                            <button type="submit" class="text-xs px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100">Cancel</button>
                         </form>
                     </div>
                 </td>

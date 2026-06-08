@@ -19,7 +19,7 @@ public class ActivityDAO {
     public List<Activity> findPublished(String keyword, Integer categoryId, int offset, int limit) throws SQLException {
         StringBuilder sql = new StringBuilder(
                 "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
-                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id) AS registered_count " +
+                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id AND r.status IN ('pending', 'approved')) AS registered_count " +
                 "FROM activity a " +
                 "JOIN user u ON a.organizer_id = u.id " +
                 "JOIN activity_category ac ON a.category_id = ac.id " +
@@ -93,7 +93,7 @@ public class ActivityDAO {
      */
     public List<Activity> findByOrganizer(int organizerId) throws SQLException {
         String sql = "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
-                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id) AS registered_count " +
+                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id AND r.status IN ('pending', 'approved')) AS registered_count " +
                 "FROM activity a " +
                 "JOIN user u ON a.organizer_id = u.id " +
                 "JOIN activity_category ac ON a.category_id = ac.id " +
@@ -117,7 +117,7 @@ public class ActivityDAO {
      */
     public List<Activity> findAll() throws SQLException {
         String sql = "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
-                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id) AS registered_count " +
+                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id AND r.status IN ('pending', 'approved')) AS registered_count " +
                 "FROM activity a " +
                 "JOIN user u ON a.organizer_id = u.id " +
                 "JOIN activity_category ac ON a.category_id = ac.id " +
@@ -139,7 +139,7 @@ public class ActivityDAO {
      */
     public Activity findById(int id) throws SQLException {
         String sql = "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
-                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id) AS registered_count " +
+                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id AND r.status IN ('pending', 'approved')) AS registered_count " +
                 "FROM activity a " +
                 "JOIN user u ON a.organizer_id = u.id " +
                 "JOIN activity_category ac ON a.category_id = ac.id " +
@@ -211,26 +211,55 @@ public class ActivityDAO {
     }
 
     /**
-     * Delete an activity. Resets auto-increment to MAX(id)+1 afterward
-     * so the next inserted row fills the gap.
+     * Delete an activity and all related records (check-ins → registrations → activity).
+     * Resets auto-increment to MAX(id)+1 afterward so the next inserted row fills the gap.
      */
     public boolean delete(int id) throws SQLException {
-        String sql = "DELETE FROM activity WHERE id = ?";
-        try (Connection conn = DBConnectionManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            boolean deleted = stmt.executeUpdate() > 0;
-            if (deleted) {
-                // Reset auto-increment to the next available ID
-                try (Statement st = conn.createStatement()) {
-                    ResultSet rs = st.executeQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM activity");
-                    if (rs.next()) {
-                        int nextId = rs.getInt(1);
-                        st.executeUpdate("ALTER TABLE activity AUTO_INCREMENT = " + nextId);
+        try (Connection conn = DBConnectionManager.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                // 1. Delete check-in records linked to registrations of this activity
+                String deleteCheckins = "DELETE FROM checkin WHERE registration_id IN " +
+                        "(SELECT id FROM registration WHERE activity_id = ?)";
+                try (PreparedStatement stmt = conn.prepareStatement(deleteCheckins)) {
+                    stmt.setInt(1, id);
+                    stmt.executeUpdate();
+                }
+
+                // 2. Delete registrations for this activity
+                String deleteRegs = "DELETE FROM registration WHERE activity_id = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(deleteRegs)) {
+                    stmt.setInt(1, id);
+                    stmt.executeUpdate();
+                }
+
+                // 3. Delete the activity
+                String deleteActivity = "DELETE FROM activity WHERE id = ?";
+                boolean deleted;
+                try (PreparedStatement stmt = conn.prepareStatement(deleteActivity)) {
+                    stmt.setInt(1, id);
+                    deleted = stmt.executeUpdate() > 0;
+                }
+
+                // 4. Reset auto-increment
+                if (deleted) {
+                    try (Statement st = conn.createStatement()) {
+                        ResultSet rs = st.executeQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM activity");
+                        if (rs.next()) {
+                            int nextId = rs.getInt(1);
+                            st.executeUpdate("ALTER TABLE activity AUTO_INCREMENT = " + nextId);
+                        }
                     }
                 }
+
+                conn.commit();
+                return deleted;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
             }
-            return deleted;
         }
     }
 

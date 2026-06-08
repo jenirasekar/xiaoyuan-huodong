@@ -21,6 +21,7 @@ public class Registration implements Serializable {
     private String activityTitle;
     private LocalDateTime activityTime;
     private String activityLocation;
+    private String activityStatus;
     private boolean checkedIn;
 
     public Registration() {}
@@ -59,6 +60,9 @@ public class Registration implements Serializable {
 
     public String getActivityLocation() { return activityLocation; }
     public void setActivityLocation(String activityLocation) { this.activityLocation = activityLocation; }
+
+    public String getActivityStatus() { return activityStatus; }
+    public void setActivityStatus(String activityStatus) { this.activityStatus = activityStatus; }
 
     public boolean isCheckedIn() { return checkedIn; }
     public void setCheckedIn(boolean checkedIn) { this.checkedIn = checkedIn; }

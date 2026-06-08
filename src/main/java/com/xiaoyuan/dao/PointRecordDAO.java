@@ -38,7 +38,7 @@ public class PointRecordDAO {
         String sql = "SELECT pr.*, u.real_name AS student_name, a.title AS activity_title " +
                 "FROM point_record pr " +
                 "JOIN user u ON pr.student_id = u.id " +
-                "JOIN activity a ON pr.activity_id = a.id " +
+                "LEFT JOIN activity a ON pr.activity_id = a.id " +
                 "WHERE pr.student_id = ? ORDER BY pr.created_at DESC";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -95,6 +95,18 @@ public class PointRecordDAO {
                 }
                 return leaderboard;
             }
+        }
+    }
+
+    /**
+     * Delete all point records for an activity.
+     */
+    public void deleteByActivity(int activityId) throws SQLException {
+        String sql = "DELETE FROM point_record WHERE activity_id = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, activityId);
+            stmt.executeUpdate();
         }
     }
 
