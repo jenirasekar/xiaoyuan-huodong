@@ -78,25 +78,33 @@
 <div id="userModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
         <h3 id="modalTitle" class="text-lg font-semibold text-gray-800 mb-4">Add User</h3>
-        <form id="userForm" action="<%= contextPath %>/admin/users" method="post">
+        <form id="userForm" action="<%= contextPath %>/admin/users" method="post" onsubmit="return validateUserForm()">
             <input type="hidden" name="action" value="save">
             <input type="hidden" name="id" id="userId">
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Username *</label>
-                    <input type="text" name="username" id="formUsername" required class="input-field" placeholder="Username">
+                    <input type="text" name="username" id="formUsername" required class="input-field" placeholder="Username"
+                           maxlength="50" oninput="clearFieldError('username')">
+                    <p id="errUsername" class="hidden text-xs text-red-600 mt-1"></p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Password <span id="pwReq" class="text-red-500">*</span></label>
-                    <input type="password" name="password" id="formPassword" class="input-field" placeholder="Leave empty to keep current">
+                    <input type="password" name="password" id="formPassword" class="input-field" placeholder="Leave empty to keep current"
+                           maxlength="100" oninput="clearFieldError('password')">
+                    <p id="errPassword" class="hidden text-xs text-red-600 mt-1"></p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Real Name *</label>
-                    <input type="text" name="realName" id="formRealName" required class="input-field" placeholder="Full name">
+                    <input type="text" name="realName" id="formRealName" required class="input-field" placeholder="Full name"
+                           maxlength="100" oninput="clearFieldError('realName')">
+                    <p id="errRealName" class="hidden text-xs text-red-600 mt-1"></p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" name="email" id="formEmail" class="input-field" placeholder="Email address">
+                    <input type="email" name="email" id="formEmail" class="input-field" placeholder="Email address"
+                           maxlength="100" oninput="clearFieldError('email')">
+                    <p id="errEmail" class="hidden text-xs text-red-600 mt-1"></p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Role *</label>
@@ -122,6 +130,7 @@ function showUserModal() {
     document.getElementById('userId').value = '';
     document.getElementById('pwReq').classList.remove('hidden');
     document.getElementById('formPassword').required = true;
+    clearAllErrors();
     document.getElementById('userModal').classList.remove('hidden');
 }
 function editUser(id, username, realName, email, role) {
@@ -134,7 +143,87 @@ function editUser(id, username, realName, email, role) {
     document.getElementById('pwReq').classList.add('hidden');
     document.getElementById('formPassword').required = false;
     document.getElementById('formPassword').value = '';
+    clearAllErrors();
     document.getElementById('userModal').classList.remove('hidden');
+}
+
+// ── Validation ──────────────────────────────────────────────
+
+function showError(field, msg) {
+    var el = document.getElementById('err' + field.charAt(0).toUpperCase() + field.slice(1));
+    if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+}
+function clearFieldError(field) {
+    var el = document.getElementById('err' + field.charAt(0).toUpperCase() + field.slice(1));
+    if (el) { el.textContent = ''; el.classList.add('hidden'); }
+}
+function clearAllErrors() {
+    ['Username','Password','RealName','Email'].forEach(function(f) { clearFieldError(f); });
+}
+
+function validateUserForm() {
+    clearAllErrors();
+    var valid = true;
+
+    // Username
+    var username = document.getElementById('formUsername').value.trim();
+    var usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!username) {
+        showError('username', 'Username is required.');
+        valid = false;
+    } else if (username.length < 3) {
+        showError('username', 'Username must be at least 3 characters.');
+        valid = false;
+    } else if (username.length > 50) {
+        showError('username', 'Username must not exceed 50 characters.');
+        valid = false;
+    } else if (!usernameRegex.test(username)) {
+        showError('username', 'Username can only contain letters, numbers, and underscores.');
+        valid = false;
+    }
+
+    // Password
+    var isNew = !document.getElementById('userId').value;
+    var password = document.getElementById('formPassword').value;
+    if (isNew) {
+        if (!password) {
+            showError('password', 'Password is required for new users.');
+            valid = false;
+        } else if (password.length < 6) {
+            showError('password', 'Password must be at least 6 characters.');
+            valid = false;
+        }
+    } else {
+        if (password && password.length < 6) {
+            showError('password', 'Password must be at least 6 characters.');
+            valid = false;
+        }
+    }
+
+    // Real Name
+    var realName = document.getElementById('formRealName').value.trim();
+    if (!realName) {
+        showError('realName', 'Real name is required.');
+        valid = false;
+    } else if (realName.length < 2) {
+        showError('realName', 'Real name must be at least 2 characters.');
+        valid = false;
+    } else if (realName.length > 100) {
+        showError('realName', 'Real name must not exceed 100 characters.');
+        valid = false;
+    }
+
+    // Email (optional)
+    var email = document.getElementById('formEmail').value.trim();
+    if (email) {
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showError('email', 'Please enter a valid email address.');
+            valid = false;
+        }
+    }
+
+    return valid;
 }
 </script>
 

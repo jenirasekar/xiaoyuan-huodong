@@ -68,27 +68,88 @@ public class UserManageServlet extends HttpServlet {
 
     private void saveUser(HttpServletRequest req) throws Exception {
         String idStr = req.getParameter("id");
-        User user;
         boolean isNew = (idStr == null || idStr.isEmpty());
 
+        // ── Extract and trim fields ──
+        String username = req.getParameter("username");
+        if (username != null) username = username.trim();
+        String plainPassword = req.getParameter("password");
+        String realName = req.getParameter("realName");
+        if (realName != null) realName = realName.trim();
+        String email = req.getParameter("email");
+        if (email != null) email = email.trim();
+        String role = req.getParameter("role");
+
+        // ── Validate Username ──
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username is required.");
+        }
+        if (username.length() < 3) {
+            throw new IllegalArgumentException("Username must be at least 3 characters.");
+        }
+        if (username.length() > 50) {
+            throw new IllegalArgumentException("Username must not exceed 50 characters.");
+        }
+        if (!username.matches("^[a-zA-Z0-9_]+$")) {
+            throw new IllegalArgumentException("Username can only contain letters, numbers, and underscores.");
+        }
+        // Check uniqueness
+        User existingByUsername = userDAO.findByUsername(username);
+        if (existingByUsername != null && (isNew || existingByUsername.getId() != Integer.parseInt(idStr))) {
+            throw new IllegalArgumentException("Username '" + username + "' is already taken.");
+        }
+
+        // ── Validate Password ──
+        if (isNew) {
+            if (plainPassword == null || plainPassword.isEmpty()) {
+                throw new IllegalArgumentException("Password is required for new users.");
+            }
+            if (plainPassword.length() < 6) {
+                throw new IllegalArgumentException("Password must be at least 6 characters.");
+            }
+        } else {
+            if (plainPassword != null && !plainPassword.isEmpty() && plainPassword.length() < 6) {
+                throw new IllegalArgumentException("Password must be at least 6 characters.");
+            }
+        }
+
+        // ── Validate Real Name ──
+        if (realName == null || realName.isEmpty()) {
+            throw new IllegalArgumentException("Real name is required.");
+        }
+        if (realName.length() < 2) {
+            throw new IllegalArgumentException("Real name must be at least 2 characters.");
+        }
+        if (realName.length() > 100) {
+            throw new IllegalArgumentException("Real name must not exceed 100 characters.");
+        }
+
+        // ── Validate Email ──
+        if (email != null && !email.isEmpty()) {
+            if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+                throw new IllegalArgumentException("Please enter a valid email address.");
+            }
+        }
+
+        // ── Build user object ──
+        User user;
         if (isNew) {
             user = new User();
-            user.setUsername(req.getParameter("username"));
-            String plainPassword = req.getParameter("password");
+            user.setUsername(username);
             if (plainPassword != null && !plainPassword.isEmpty()) {
                 user.setPassword(PasswordUtil.hash(plainPassword));
             }
         } else {
             user = userDAO.findById(Integer.parseInt(idStr));
-            user.setUsername(req.getParameter("username"));
-            if (req.getParameter("password") != null && !req.getParameter("password").isEmpty()) {
-                user.setPassword(PasswordUtil.hash(req.getParameter("password")));
+            user.setUsername(username);
+            if (plainPassword != null && !plainPassword.isEmpty()) {
+                user.setPassword(PasswordUtil.hash(plainPassword));
             }
         }
 
-        user.setRealName(req.getParameter("realName"));
-        user.setEmail(req.getParameter("email"));
-        user.setRole(req.getParameter("role"));
+        user.setRealName(realName);
+        user.setEmail(email);
+        user.setRole(role);
 
         if (isNew) {
             userDAO.create(user);
