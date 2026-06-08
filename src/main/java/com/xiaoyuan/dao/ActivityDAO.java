@@ -97,7 +97,7 @@ public class ActivityDAO {
                 "FROM activity a " +
                 "JOIN user u ON a.organizer_id = u.id " +
                 "JOIN activity_category ac ON a.category_id = ac.id " +
-                "WHERE a.organizer_id = ? ORDER BY a.created_at DESC";
+                "WHERE a.organizer_id = ? ORDER BY a.id ASC";
 
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -121,7 +121,7 @@ public class ActivityDAO {
                 "FROM activity a " +
                 "JOIN user u ON a.organizer_id = u.id " +
                 "JOIN activity_category ac ON a.category_id = ac.id " +
-                "ORDER BY a.created_at DESC";
+                "ORDER BY a.created_at ASC";
 
         try (Connection conn = DBConnectionManager.getConnection();
              Statement stmt = conn.createStatement();
@@ -211,14 +211,26 @@ public class ActivityDAO {
     }
 
     /**
-     * Delete an activity.
+     * Delete an activity. Resets auto-increment to MAX(id)+1 afterward
+     * so the next inserted row fills the gap.
      */
     public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM activity WHERE id = ?";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+            boolean deleted = stmt.executeUpdate() > 0;
+            if (deleted) {
+                // Reset auto-increment to the next available ID
+                try (Statement st = conn.createStatement()) {
+                    ResultSet rs = st.executeQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM activity");
+                    if (rs.next()) {
+                        int nextId = rs.getInt(1);
+                        st.executeUpdate("ALTER TABLE activity AUTO_INCREMENT = " + nextId);
+                    }
+                }
+            }
+            return deleted;
         }
     }
 

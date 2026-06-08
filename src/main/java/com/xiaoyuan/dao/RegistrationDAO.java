@@ -13,7 +13,7 @@ import java.util.List;
 public class RegistrationDAO {
 
     /**
-     * Find registration by student and activity.
+     * Find registration by student and activity (latest first).
      */
     public Registration findByStudentAndActivity(int studentId, int activityId) throws SQLException {
         String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
@@ -22,7 +22,8 @@ public class RegistrationDAO {
                 "FROM registration r " +
                 "JOIN user u ON r.student_id = u.id " +
                 "JOIN activity a ON r.activity_id = a.id " +
-                "WHERE r.student_id = ? AND r.activity_id = ?";
+                "WHERE r.student_id = ? AND r.activity_id = ? " +
+                "ORDER BY r.registered_at DESC";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, studentId);

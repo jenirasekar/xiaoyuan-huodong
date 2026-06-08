@@ -75,7 +75,7 @@ public class UserDAO {
         if (roleFilter != null && !roleFilter.isEmpty()) {
             sql.append(" AND role = ?");
         }
-        sql.append(" ORDER BY created_at DESC");
+        sql.append(" ORDER BY id ASC");
 
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
@@ -141,14 +141,26 @@ public class UserDAO {
     }
 
     /**
-     * Delete a user by ID.
+     * Delete a user by ID. Resets auto-increment to MAX(id)+1 afterward
+     * so the next inserted row fills the gap.
      */
     public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM user WHERE id = ?";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+            boolean deleted = stmt.executeUpdate() > 0;
+            if (deleted) {
+                // Reset auto-increment to the next available ID
+                try (Statement st = conn.createStatement()) {
+                    ResultSet rs = st.executeQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM user");
+                    if (rs.next()) {
+                        int nextId = rs.getInt(1);
+                        st.executeUpdate("ALTER TABLE user AUTO_INCREMENT = " + nextId);
+                    }
+                }
+            }
+            return deleted;
         }
     }
 

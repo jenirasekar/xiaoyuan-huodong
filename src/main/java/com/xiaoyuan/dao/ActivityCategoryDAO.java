@@ -67,7 +67,18 @@ public class ActivityCategoryDAO {
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+            boolean deleted = stmt.executeUpdate() > 0;
+            if (deleted) {
+                // Reset auto-increment to the next available ID
+                try (Statement st = conn.createStatement()) {
+                    ResultSet rs = st.executeQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM activity_category");
+                    if (rs.next()) {
+                        int nextId = rs.getInt(1);
+                        st.executeUpdate("ALTER TABLE activity_category AUTO_INCREMENT = " + nextId);
+                    }
+                }
+            }
+            return deleted;
         }
     }
 
