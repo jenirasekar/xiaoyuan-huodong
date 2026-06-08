@@ -59,6 +59,9 @@ public class ActivityManageServlet extends HttpServlet {
                 case "save":
                     saveActivity(req, resp);
                     break;
+                case "delete":
+                    deleteActivity(req, resp);
+                    break;
                 case "updateStatus":
                     updateStatus(req, resp);
                     break;

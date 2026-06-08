@@ -182,7 +182,16 @@ public class ActivityDAO {
                 "WHERE id = ?";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            setActivityParams(stmt, activity);
+            stmt.setInt(1, activity.getCategoryId());
+            stmt.setString(2, activity.getTitle());
+            stmt.setString(3, activity.getLocation());
+            stmt.setTimestamp(4, Timestamp.valueOf(activity.getActivityTime()));
+            stmt.setTimestamp(5, Timestamp.valueOf(activity.getRegStart()));
+            stmt.setTimestamp(6, Timestamp.valueOf(activity.getRegEnd()));
+            stmt.setInt(7, activity.getMaxParticipants());
+            stmt.setInt(8, activity.getPoints());
+            stmt.setString(9, activity.getStatus());
+            stmt.setString(10, activity.getDescription());
             stmt.setInt(11, activity.getId());
             return stmt.executeUpdate() > 0;
         }
