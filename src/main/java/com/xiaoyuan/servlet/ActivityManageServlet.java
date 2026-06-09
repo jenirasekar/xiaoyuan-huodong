@@ -58,12 +58,15 @@ public class ActivityManageServlet extends HttpServlet {
             switch (action) {
                 case "save":
                     saveActivity(req, resp);
+                    req.getSession().setAttribute("successMessage", "Activity saved successfully.");
                     break;
                 case "delete":
                     deleteActivity(req, resp);
+                    req.getSession().setAttribute("successMessage", "Activity deleted successfully.");
                     break;
                 case "updateStatus":
                     updateStatus(req, resp);
+                    req.getSession().setAttribute("successMessage", "Activity status updated successfully.");
                     break;
                 default:
                     resp.sendRedirect(req.getContextPath() + "/manage-activities");
