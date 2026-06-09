@@ -98,6 +98,9 @@
                 <a href="<%= contextPath %>/registrations" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/registrations") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
                     📝 My Registrations
                 </a>
+                <a href="<%= contextPath %>/self-checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/self-checkin") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                    🏷️ Self Check-in
+                </a>
                 <a href="<%= contextPath %>/points" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/points") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
                     ⭐ My Points
                 </a>

@@ -223,6 +223,27 @@ public class ActivityDAO {
     }
 
     /**
+     * Find activity by check-in code (for self-check-in).
+     */
+    public Activity findByCheckinCode(String code) throws SQLException {
+        String sql = "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
+                "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id AND r.status IN ('pending', 'approved')) AS registered_count " +
+                "FROM activity a " +
+                "JOIN user u ON a.organizer_id = u.id " +
+                "JOIN activity_category ac ON a.category_id = ac.id " +
+                "WHERE a.checkin_code = ? AND a.status = 'published'";
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, code);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapRow(rs);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Find activity by ID with full joined data.
      */
     public Activity findById(int id) throws SQLException {
@@ -248,8 +269,8 @@ public class ActivityDAO {
      */
     public int create(Activity activity) throws SQLException {
         String sql = "INSERT INTO activity (organizer_id, category_id, title, location, activity_time, " +
-                "reg_start, reg_end, max_participants, points, status, description) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "reg_start, reg_end, max_participants, points, status, description, checkin_code) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             setActivityParams(stmt, activity);
@@ -266,8 +287,8 @@ public class ActivityDAO {
      */
     public boolean update(Activity activity) throws SQLException {
         String sql = "UPDATE activity SET category_id = ?, title = ?, location = ?, activity_time = ?, " +
-                "reg_start = ?, reg_end = ?, max_participants = ?, points = ?, status = ?, description = ? " +
-                "WHERE id = ?";
+                "reg_start = ?, reg_end = ?, max_participants = ?, points = ?, status = ?, description = ?, " +
+                "checkin_code = ? WHERE id = ?";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, activity.getCategoryId());
@@ -280,7 +301,8 @@ public class ActivityDAO {
             stmt.setInt(8, activity.getPoints());
             stmt.setString(9, activity.getStatus());
             stmt.setString(10, activity.getDescription());
-            stmt.setInt(11, activity.getId());
+            stmt.setString(11, activity.getCheckinCode());
+            stmt.setInt(12, activity.getId());
             return stmt.executeUpdate() > 0;
         }
     }
@@ -421,6 +443,7 @@ public class ActivityDAO {
         stmt.setInt(9, activity.getPoints());
         stmt.setString(10, activity.getStatus());
         stmt.setString(11, activity.getDescription());
+        stmt.setString(12, activity.getCheckinCode());
     }
 
     private Activity mapRow(ResultSet rs) throws SQLException {
@@ -437,6 +460,7 @@ public class ActivityDAO {
         a.setPoints(rs.getInt("points"));
         a.setStatus(rs.getString("status"));
         a.setDescription(rs.getString("description"));
+        a.setCheckinCode(rs.getString("checkin_code"));
         a.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         a.setOrganizerName(rs.getString("organizer_name"));
         a.setCategoryName(rs.getString("category_name"));

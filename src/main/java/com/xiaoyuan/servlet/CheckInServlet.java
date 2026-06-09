@@ -78,6 +78,14 @@ public class CheckInServlet extends HttpServlet {
                 return;
             }
 
+            // Verify activity has started (check-in only during or after the event)
+            Activity activity = activityDAO.findById(reg.getActivityId());
+            if (activity != null && activity.getActivityTime().isAfter(java.time.LocalDateTime.now())) {
+                req.getSession().setAttribute("errorMessage", "Check-in is only available during or after the activity starts. The activity begins at " + activity.getActivityTime().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".");
+                resp.sendRedirect(req.getContextPath() + "/checkin?activityId=" + activityIdStr);
+                return;
+            }
+
             // Create check-in
             String checkinCode = req.getParameter("checkinCode");
             if (checkinCode == null || checkinCode.trim().isEmpty()) {
@@ -90,7 +98,6 @@ public class CheckInServlet extends HttpServlet {
             checkInDAO.create(checkIn);
 
             // Award points (guard against duplicates)
-            Activity activity = activityDAO.findById(reg.getActivityId());
             if (activity != null && activity.getPoints() > 0) {
                 if (!pointRecordDAO.existsByStudentAndActivity(reg.getStudentId(), reg.getActivityId())) {
                     PointRecord record = new PointRecord();

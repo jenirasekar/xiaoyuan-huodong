@@ -87,6 +87,14 @@
                         <option value="completed" <%= (isEdit && "completed".equals(activity.getStatus())) ? "selected" : "" %>>Completed</option>
                     </select>
                 </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Check-in Code</label>
+                    <input type="text" name="checkinCode" class="input-field"
+                           value="<%= (isEdit && activity.getCheckinCode() != null) ? activity.getCheckinCode() : "" %>"
+                           placeholder="Code for student self-check-in (optional)">
+                    <p class="text-xs text-gray-500 mt-1">Students can use this code for self-check-in during the event.</p>
+                </div>
             </div>
 
             <div>

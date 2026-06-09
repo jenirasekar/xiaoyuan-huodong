@@ -153,6 +153,7 @@ public class ActivityManageServlet extends HttpServlet {
         activity.setPoints(Integer.parseInt(req.getParameter("points")));
         activity.setStatus(req.getParameter("status"));
         activity.setDescription(req.getParameter("description"));
+        activity.setCheckinCode(req.getParameter("checkinCode"));
 
         if (idStr != null && !idStr.isEmpty()) {
             activityDAO.update(activity);

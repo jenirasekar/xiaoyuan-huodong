@@ -50,6 +50,7 @@ CREATE TABLE activity (
     activity_time DATETIME NOT NULL,
     reg_start DATETIME NOT NULL,
     reg_end DATETIME NOT NULL,
+    checkin_code VARCHAR(100) DEFAULT NULL,
     max_participants INT NOT NULL DEFAULT 50,
     points INT NOT NULL DEFAULT 0,
     status ENUM('draft', 'published', 'cancelled', 'completed', 'deleted') NOT NULL DEFAULT 'draft',

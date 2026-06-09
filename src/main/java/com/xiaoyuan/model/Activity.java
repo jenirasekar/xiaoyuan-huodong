@@ -20,6 +20,7 @@ public class Activity implements Serializable {
     private int points;
     private String status;      // draft, published, cancelled, completed, deleted
     private String description;
+    private String checkinCode;  // code for student self-check-in
     private LocalDateTime createdAt;
 
     // Joined fields for display
@@ -65,6 +66,9 @@ public class Activity implements Serializable {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getCheckinCode() { return checkinCode; }
+    public void setCheckinCode(String checkinCode) { this.checkinCode = checkinCode; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

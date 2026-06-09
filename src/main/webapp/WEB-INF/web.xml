@@ -99,6 +99,16 @@
         <url-pattern>/reviews/*</url-pattern>
     </servlet-mapping>
 
+    <!-- Self Check-in Servlet (Student) -->
+    <servlet>
+        <servlet-name>SelfCheckInServlet</servlet-name>
+        <servlet-class>com.xiaoyuan.servlet.SelfCheckInServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SelfCheckInServlet</servlet-name>
+        <url-pattern>/self-checkin</url-pattern>
+    </servlet-mapping>
+
     <!-- Check-in Servlet -->
     <servlet>
         <servlet-name>CheckInServlet</servlet-name>
