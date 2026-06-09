@@ -1,7 +1,10 @@
 package com.xiaoyuan.util;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
@@ -10,15 +13,15 @@ import java.sql.SQLException;
  */
 public class DBConnectionManager {
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/xiaoyuan_huodong?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "0713";
+    private static DataSource dataSource;
 
     static {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("MySQL JDBC Driver not found. Please add mysql-connector-j to the classpath.", e);
+            Context ctx = new InitialContext();
+            dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/xiaoyuan_huodong");
+        } catch (NamingException e) {
+            throw new RuntimeException(
+                    "JNDI DataSource lookup failed. Check META-INF/context.xml is configured correctly.", e);
         }
     }
 
@@ -27,7 +30,7 @@ public class DBConnectionManager {
      * Callers are responsible for closing the connection.
      */
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        return dataSource.getConnection();
     }
 
     /**

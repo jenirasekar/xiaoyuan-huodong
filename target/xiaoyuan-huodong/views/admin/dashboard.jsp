@@ -51,7 +51,7 @@
                     <div class="text-sm font-medium text-gray-800"><%= act.getTitle() %></div>
                     <div class="text-xs text-gray-500"><%= act.getCategoryName() %> · <%= act.getOrganizerName() %></div>
                 </div>
-                <span class="text-xs px-2 py-0.5 rounded-full <%= "published".equals(act.getStatus()) ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700" %>"><%= act.getStatus() %></span>
+                <span class="text-xs px-2 py-0.5 rounded-full <%= "published".equals(act.getStatus()) ? "bg-green-100 text-green-700" : "cancelled".equals(act.getStatus()) ? "bg-red-100 text-red-700" : "deleted".equals(act.getStatus()) ? "bg-gray-200 text-gray-500" : "bg-gray-100 text-gray-700" %>"><%= act.getStatus() %></span>
             </div>
             <% } %>
         </div>

@@ -10,16 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="430b4601-fa6c-481c-8390-62a11a4916f3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/sql/schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/sql/schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/model/Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/model/Activity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/servlet/ActivityManageServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/servlet/ActivityManageServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/servlet/ActivityServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/servlet/ActivityServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/admin/dashboard.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/admin/dashboard.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/organizer/dashboard.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/organizer/dashboard.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/organizer/manage-activities.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/organizer/manage-activities.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/student/activity-detail.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/student/activity-detail.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/student/dashboard.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/student/dashboard.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/views/student/my-registrations.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/views/student/my-registrations.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/util/DBConnectionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/util/DBConnectionManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +67,7 @@
     ]
   }
 }</component>
-  <component name="RunManager" selected="Database Script.seed.sql">
+  <component name="RunManager" selected="Tomcat Server.Tomcat 10.1.53">
     <configuration name="schema.sql" type="DatabaseScript" editBeforeRun="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/sql/schema.sql" />
       <script-mode>FILE</script-mode>
@@ -199,7 +192,7 @@
       <workItem from="1780879914904" duration="7731000" />
       <workItem from="1780892177333" duration="10289000" />
       <workItem from="1780903829126" duration="4632000" />
-      <workItem from="1780966687138" duration="1194000" />
+      <workItem from="1780966687138" duration="2345000" />
     </task>
     <servers />
   </component>

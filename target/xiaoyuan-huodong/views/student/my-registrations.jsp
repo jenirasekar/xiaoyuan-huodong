@@ -39,6 +39,8 @@
                         <%= reg.getActivityTitle() %>
                         <% if (reg.getActivityStatus() != null && "cancelled".equals(reg.getActivityStatus())) { %>
                             <span class="ml-1 px-1.5 py-0.5 text-xs font-medium rounded bg-red-100 text-red-600">Cancelled</span>
+                        <% } else if (reg.getActivityStatus() != null && "deleted".equals(reg.getActivityStatus())) { %>
+                            <span class="ml-1 px-1.5 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-500">Deleted</span>
                         <% } %>
                     </div>
                     <div class="text-xs text-gray-500">📍 <%= reg.getActivityLocation() %></div>
