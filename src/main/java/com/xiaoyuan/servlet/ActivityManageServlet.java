@@ -154,7 +154,20 @@ public class ActivityManageServlet extends HttpServlet {
         activity.setRegEnd(LocalDateTime.parse(req.getParameter("regEnd"), formatter));
         activity.setMaxParticipants(Integer.parseInt(req.getParameter("maxParticipants")));
         activity.setPoints(Integer.parseInt(req.getParameter("points")));
-        activity.setStatus(req.getParameter("status"));
+
+        String newStatus = req.getParameter("status");
+
+        // Guard: cannot mark as completed before the activity has started
+        if ("completed".equals(newStatus) && activity.getActivityTime() != null) {
+            if (LocalDateTime.now().isBefore(activity.getActivityTime())) {
+                req.getSession().setAttribute("errorMessage",
+                        "Cannot mark as completed - the activity hasn't started yet.");
+                resp.sendRedirect(req.getContextPath() + "/manage-activities");
+                return;
+            }
+        }
+
+        activity.setStatus(newStatus);
         activity.setDescription(req.getParameter("description"));
         activity.setCheckinCode(req.getParameter("checkinCode"));
 

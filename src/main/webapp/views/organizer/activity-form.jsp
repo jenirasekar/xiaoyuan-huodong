@@ -84,8 +84,20 @@
                         <option value="draft" <%= (isEdit && "draft".equals(activity.getStatus())) ? "selected" : "" %>>Draft</option>
                         <option value="published" <%= (isEdit && "published".equals(activity.getStatus())) ? "selected" : "" %>>Published</option>
                         <option value="cancelled" <%= (isEdit && "cancelled".equals(activity.getStatus())) ? "selected" : "" %>>Cancelled</option>
-                        <option value="completed" <%= (isEdit && "completed".equals(activity.getStatus())) ? "selected" : "" %>>Completed</option>
+                        <%
+                            boolean canComplete = isEdit
+                                && activity.getActivityTime() != null
+                                && !java.time.LocalDateTime.now().isBefore(activity.getActivityTime());
+                        %>
+                        <option value="completed"
+                            <%= (isEdit && "completed".equals(activity.getStatus())) ? "selected" : "" %>
+                            <%= canComplete ? "" : "disabled" %>>
+                            Completed<%= !canComplete ? " (after activity starts)" : "" %>
+                        </option>
                     </select>
+                    <% if (!canComplete && isEdit) { %>
+                        <p class="text-xs text-amber-600 mt-1">Cannot mark as completed until the activity time has passed.</p>
+                    <% } %>
                 </div>
 
                 <div>
