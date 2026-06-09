@@ -58,12 +58,25 @@ public class SelfCheckInServlet extends HttpServlet {
                 return;
             }
 
-            // Verify activity time: check-in only during or after the event
-            if (activity.getActivityTime().isAfter(LocalDateTime.now())) {
-                String timeStr = activity.getActivityTime()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            // Verify activity time: check-in only within 2 hours of activity start
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime activityStart = activity.getActivityTime();
+            java.time.format.DateTimeFormatter dtf =
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+            if (now.isBefore(activityStart)) {
                 req.getSession().setAttribute("errorMessage",
-                        "Check-in is only available during or after the activity. The activity begins at " + timeStr + ".");
+                        "Check-in is only available during or after the activity. The activity begins at "
+                        + activityStart.format(dtf) + ".");
+                resp.sendRedirect(req.getContextPath() + "/self-checkin");
+                return;
+            }
+
+            LocalDateTime checkinDeadline = activityStart.plusHours(2);
+            if (now.isAfter(checkinDeadline)) {
+                req.getSession().setAttribute("errorMessage",
+                        "The check-in window has closed. Check-in is only available within 2 hours of the activity start time (deadline was "
+                        + checkinDeadline.format(dtf) + ").");
                 resp.sendRedirect(req.getContextPath() + "/self-checkin");
                 return;
             }

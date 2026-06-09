@@ -78,12 +78,30 @@ public class CheckInServlet extends HttpServlet {
                 return;
             }
 
-            // Verify activity has started (check-in only during or after the event)
+            // Verify activity time: check-in only within 2 hours of activity start
             Activity activity = activityDAO.findById(reg.getActivityId());
-            if (activity != null && activity.getActivityTime().isAfter(java.time.LocalDateTime.now())) {
-                req.getSession().setAttribute("errorMessage", "Check-in is only available during or after the activity starts. The activity begins at " + activity.getActivityTime().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + ".");
-                resp.sendRedirect(req.getContextPath() + "/checkin?activityId=" + activityIdStr);
-                return;
+            if (activity != null) {
+                java.time.LocalDateTime now = java.time.LocalDateTime.now();
+                java.time.LocalDateTime activityStart = activity.getActivityTime();
+                java.time.format.DateTimeFormatter dtf =
+                        java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+                if (now.isBefore(activityStart)) {
+                    req.getSession().setAttribute("errorMessage",
+                            "Check-in is only available during or after the activity starts. The activity begins at "
+                            + activityStart.format(dtf) + ".");
+                    resp.sendRedirect(req.getContextPath() + "/checkin?activityId=" + activityIdStr);
+                    return;
+                }
+
+                java.time.LocalDateTime checkinDeadline = activityStart.plusHours(2);
+                if (now.isAfter(checkinDeadline)) {
+                    req.getSession().setAttribute("errorMessage",
+                            "The check-in window has closed. Check-in is only available within 2 hours of the activity start time (deadline was "
+                            + checkinDeadline.format(dtf) + ").");
+                    resp.sendRedirect(req.getContextPath() + "/checkin?activityId=" + activityIdStr);
+                    return;
+                }
             }
 
             // Create check-in

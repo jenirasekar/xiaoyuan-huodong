@@ -11,7 +11,7 @@
         <div class="text-center mb-6">
             <div class="text-5xl mb-4">🏷️</div>
             <p class="text-gray-600">Enter the code given by the organizer to check in for your activity.</p>
-            <p class="text-sm text-gray-400 mt-1">Check-in is only available during or after the activity start time.</p>
+            <p class="text-sm text-gray-400 mt-1">Check-in is only available within 2 hours of the activity start time.</p>
         </div>
 
         <form action="<%= contextPath %>/self-checkin" method="post" class="space-y-4">
