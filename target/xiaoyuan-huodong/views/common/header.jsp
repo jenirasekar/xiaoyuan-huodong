@@ -5,9 +5,10 @@
     String currentRole = (String) session.getAttribute("role");
     String contextPath = request.getContextPath();
 
-    // Guard: if not logged in, redirect to login
+    // Guard: if not logged in, redirect to login with current page as redirect target
     if (sessionUser == null) {
-        response.sendRedirect(contextPath + "/views/auth/login.jsp");
+        String currentPath = request.getRequestURI().substring(contextPath.length());
+        response.sendRedirect(contextPath + "/login?redirect=" + java.net.URLEncoder.encode(currentPath, "UTF-8"));
         return;
     }
 %>

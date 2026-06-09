@@ -56,8 +56,8 @@ public class AuthFilter implements Filter {
         User user = (session != null) ? (User) session.getAttribute("user") : null;
 
         if (user == null) {
-            // Not logged in - redirect to login page
-            res.sendRedirect(req.getContextPath() + "/views/auth/login.jsp?redirect=" +
+            // Not logged in - redirect to login page via servlet
+            res.sendRedirect(req.getContextPath() + "/login?redirect=" +
                     java.net.URLEncoder.encode(path, "UTF-8"));
             return;
         }

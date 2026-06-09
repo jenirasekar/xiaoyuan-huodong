@@ -19,10 +19,17 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        String redirect = req.getParameter("redirect");
+
         // Check if already logged in
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
-            resp.sendRedirect(req.getContextPath() + "/dashboard");
+            // Respect the redirect parameter if present and safe
+            if (redirect != null && !redirect.isEmpty() && !redirect.contains("login")) {
+                resp.sendRedirect(req.getContextPath() + redirect);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/dashboard");
+            }
             return;
         }
         req.getRequestDispatcher("/views/auth/login.jsp").forward(req, resp);
