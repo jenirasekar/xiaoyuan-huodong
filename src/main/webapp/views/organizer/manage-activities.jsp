@@ -47,7 +47,9 @@
                 <td class="px-4 py-3">
                     <% String statusClass = "draft".equals(act.getStatus()) ? "bg-gray-100 text-gray-700" :
                        "published".equals(act.getStatus()) ? "bg-green-100 text-green-700" :
-                       "cancelled".equals(act.getStatus()) ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"; %>
+                       "cancelled".equals(act.getStatus()) ? "bg-red-100 text-red-700" :
+                       "deleted".equals(act.getStatus()) ? "bg-gray-200 text-gray-500 line-through" :
+                       "bg-blue-100 text-blue-700"; %>
                     <span class="px-2 py-0.5 text-xs font-medium rounded-full <%= statusClass %>"><%= act.getStatus() %></span>
                 </td>
                 <td class="px-4 py-3 text-sm"><%= act.getRegisteredCount() %>/<%= act.getMaxParticipants() %></td>
@@ -55,10 +57,10 @@
                     <div class="flex items-center gap-1">
                         <a href="<%= contextPath %>/manage-activities?action=edit&id=<%= act.getId() %>"
                            class="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100">Edit</a>
-                        <form method="post" action="<%= contextPath %>/manage-activities" class="inline" onsubmit="return confirm('Cancel this activity?\n\nRegistrations and check-in records will be preserved. Students will see this activity as cancelled.')">
+                        <form method="post" action="<%= contextPath %>/manage-activities" class="inline" onsubmit="return confirm('Delete this activity?\n\nThis will soft-delete the activity. Registrations, check-in records, and points will be preserved. Students will see this activity as deleted.')">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="<%= act.getId() %>">
-                            <button type="submit" class="text-xs px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100">Cancel</button>
+                            <button type="submit" class="text-xs px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100">Delete</button>
                         </form>
                     </div>
                 </td>

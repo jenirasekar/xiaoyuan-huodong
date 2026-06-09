@@ -18,7 +18,7 @@ public class Activity implements Serializable {
     private LocalDateTime regEnd;
     private int maxParticipants;
     private int points;
-    private String status;      // draft, published, cancelled, completed
+    private String status;      // draft, published, cancelled, completed, deleted
     private String description;
     private LocalDateTime createdAt;
 

@@ -20,6 +20,10 @@
     <div class="mb-4 p-4 bg-red-50 border border-red-300 text-red-700 rounded-lg font-medium text-center">
         🚫 This activity has been cancelled by the organizer.
     </div>
+    <% } else if ("deleted".equals(activity.getStatus())) { %>
+    <div class="mb-4 p-4 bg-gray-100 border border-gray-400 text-gray-600 rounded-lg font-medium text-center">
+        🗑️ This activity has been removed by the organizer. Your registration and points are preserved.
+    </div>
     <% } %>
 
     <div class="bg-white rounded-lg shadow">

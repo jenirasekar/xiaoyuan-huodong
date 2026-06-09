@@ -52,7 +52,7 @@ CREATE TABLE activity (
     reg_end DATETIME NOT NULL,
     max_participants INT NOT NULL DEFAULT 50,
     points INT NOT NULL DEFAULT 0,
-    status ENUM('draft', 'published', 'cancelled', 'completed') NOT NULL DEFAULT 'draft',
+    status ENUM('draft', 'published', 'cancelled', 'completed', 'deleted') NOT NULL DEFAULT 'draft',
     description TEXT,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (organizer_id) REFERENCES user(id) ON DELETE CASCADE,

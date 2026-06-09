@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/xwechat_files/wxid_6yuabzwsi02i22_bbe3/msg/file/2026-06/**)",
+      "Bash(unzip -p \"Web_Application_System_Design_Training_Topics_EN.docx\" word/document.xml)",
+      "Bash(sed 's/<[^>]*>//g')",
+      "Bash(python3 -m pip install python-docx)",
+      "Bash(/c/Users/skar4/AppData/Local/Programs/Python/Python313/python.exe -m pip install python-docx)",
+      "Bash(/c/Users/skar4/AppData/Local/Programs/Python/Python313/python.exe *)",
+      "Bash(cd *)",
+      "Bash(git init *)",
+      "Bash(curl -sL -o src/main/webapp/assets/css/tailwind.min.css \"https://cdn.tailwindcss.com/3.4.16?plugins=forms,typography\")",
+      "Bash(curl -sL -o src/main/webapp/assets/css/tailwind.min.css \"https://unpkg.com/tailwindcss@3.4.16/dist/tailwind.min.css\")",
+      "Bash(curl -sL -o src/main/webapp/assets/js/tailwind.js \"https://cdn.tailwindcss.com\")",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial commit: Campus Activity Registration, Review & Points Management System *)",
+      "Bash(javac -cp 'C:\\\\Users\\\\skar4/.m2/repository/jakarta/servlet/jakarta.servlet-api/6.0.0/jakarta.servlet-api-6.0.0.jar;D:/tugas kuliah/sem4/web-app/xiaoyuan-huodong/src/main/java' -d 'D:/tugas kuliah/sem4/web-app/xiaoyuan-huodong/target/classes' 'D:/tugas kuliah/sem4/web-app/xiaoyuan-huodong/src/main/java/com/xiaoyuan/servlet/UserManageServlet.java')",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(cp 'D:/tugas kuliah/sem4/web-app/xiaoyuan-huodong/target/classes/com/xiaoyuan/servlet/UserManageServlet.class' 'D:/tugas kuliah/sem4/web-app/xiaoyuan-huodong/target/xiaoyuan-huodong/WEB-INF/classes/com/xiaoyuan/servlet/UserManageServlet.class')",
+      "Bash(echo \"Copied UserManageServlet.class: $?\")",
+      "Bash(cp 'D:/tugas kuliah/sem4/web-app/xiaoyuan-huodong/target/classes/com/xiaoyuan/dao/UserDAO.class' 'D:/tugas kuliah/sem4/web-app/xiaoyuan-huodong/target/xiaoyuan-huodong/WEB-INF/classes/com/xiaoyuan/dao/UserDAO.class')",
+      "Bash(echo \"Copied UserDAO.class: $?\")",
+      "Bash(echo \"JSP synced: $?\")",
+      "Bash(echo \"Dashboard JSP synced: $?\")",
+      "Bash(mvn compile *)",
+      "Bash(./mvnw compile *)",
+      "Bash(where mvn *)"
+    ]
+  }
+}

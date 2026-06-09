@@ -95,7 +95,8 @@ public class ActivityServlet extends HttpServlet {
             }
         }
 
-        // Block non-published activities unless the student is registered for it
+        // Block non-published activities unless the student is registered for it.
+        // "cancelled" and "deleted" activities are visible to registered students (soft delete).
         if (!"published".equals(activity.getStatus()) && myReg == null) {
             req.setAttribute("error", "Activity not found or not available.");
             req.getRequestDispatcher("/views/common/error.jsp").forward(req, resp);

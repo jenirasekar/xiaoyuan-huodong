@@ -66,6 +66,8 @@
                         <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-700">Draft</span>
                     <% } else if ("cancelled".equals(act.getStatus())) { %>
                         <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-700">Cancelled</span>
+                    <% } else if ("deleted".equals(act.getStatus())) { %>
+                        <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-500 line-through">Deleted</span>
                     <% } else { %>
                         <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700"><%= act.getStatus() %></span>
                     <% } %>

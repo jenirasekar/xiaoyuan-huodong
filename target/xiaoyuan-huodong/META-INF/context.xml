@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- Database connection pool configuration for Tomcat -->
+    <Resource
+        name="jdbc/xiaoyuan_huodong"
+        auth="Container"
+        type="javax.sql.DataSource"
+        maxTotal="20"
+        maxIdle="10"
+        maxWaitMillis="10000"
+        username="root"
+        password="root"
+        driverClassName="com.mysql.cj.jdbc.Driver"
+        url="jdbc:mysql://localhost:3306/xiaoyuan_huodong?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Asia/Shanghai&amp;characterEncoding=UTF-8"
+        validationQuery="SELECT 1"
+        testOnBorrow="true"
+    />
+</Context>
