@@ -29,6 +29,7 @@
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-in</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Comment</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -66,6 +67,21 @@
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-500 max-w-[200px] truncate">
                     <%= reg.getReviewComment() != null ? reg.getReviewComment() : "-" %>
+                </td>
+                <td class="px-4 py-3">
+                    <% if ("pending".equals(reg.getStatus())) { %>
+                        <form action="<%= contextPath %>/registrations" method="post"
+                              onsubmit="return confirm('Are you sure you want to cancel this registration?');"
+                              style="display:inline;">
+                            <input type="hidden" name="action" value="cancel">
+                            <input type="hidden" name="registrationId" value="<%= reg.getId() %>">
+                            <button type="submit" class="px-3 py-1 text-xs font-medium rounded bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-colors">
+                                Cancel
+                            </button>
+                        </form>
+                    <% } else { %>
+                        <span class="text-gray-300 text-sm">-</span>
+                    <% } %>
                 </td>
             </tr>
             <% } %>

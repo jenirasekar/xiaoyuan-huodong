@@ -88,6 +88,17 @@
                                     ❌ Registration rejected
                                 <% } %>
                             </div>
+                            <% if ("pending".equals(myRegistration.getStatus())) { %>
+                                <form action="<%= contextPath %>/registrations" method="post"
+                                      onsubmit="return confirm('Are you sure you want to cancel this registration?');"
+                                      class="mt-3">
+                                    <input type="hidden" name="action" value="cancel">
+                                    <input type="hidden" name="registrationId" value="<%= myRegistration.getId() %>">
+                                    <button type="submit" class="w-full py-2 bg-red-50 border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-100 transition-colors text-sm">
+                                        Cancel Registration
+                                    </button>
+                                </form>
+                            <% } %>
                         <% } else { %>
                             <%-- Time conflict warning --%>
                             <% Boolean timeConflict = (Boolean) request.getAttribute("timeConflict"); %>

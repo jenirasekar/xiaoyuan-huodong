@@ -207,6 +207,20 @@ public class RegistrationDAO {
     }
 
     /**
+     * Delete a pending registration by ID and student ID (for self-cancellation).
+     * Only deletes if the registration is still pending.
+     */
+    public boolean deletePending(int id, int studentId) throws SQLException {
+        String sql = "DELETE FROM registration WHERE id = ? AND student_id = ? AND status = 'pending'";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.setInt(2, studentId);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
      * Get approved registrations for an activity (for check-in purposes).
      */
     public List<Registration> findApprovedByActivity(int activityId) throws SQLException {

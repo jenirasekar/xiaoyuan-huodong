@@ -45,8 +45,25 @@ public class RegistrationServlet extends HttpServlet {
 
         String action = req.getParameter("action");
         if ("cancel".equals(action)) {
-            // For simplicity, we'll just show an error that cancellations aren't supported for now
-            // or redirect to the registration list
+            int regId;
+            try {
+                regId = Integer.parseInt(req.getParameter("registrationId"));
+            } catch (NumberFormatException e) {
+                req.getSession().setAttribute("errorMessage", "Invalid registration ID.");
+                resp.sendRedirect(req.getContextPath() + "/registrations");
+                return;
+            }
+
+            try {
+                boolean deleted = registrationDAO.deletePending(regId, user.getId());
+                if (deleted) {
+                    req.getSession().setAttribute("successMessage", "Registration cancelled successfully.");
+                } else {
+                    req.getSession().setAttribute("errorMessage", "Unable to cancel. The registration may have already been reviewed.");
+                }
+            } catch (Exception e) {
+                req.getSession().setAttribute("errorMessage", "Failed to cancel registration: " + e.getMessage());
+            }
             resp.sendRedirect(req.getContextPath() + "/registrations");
             return;
         }
