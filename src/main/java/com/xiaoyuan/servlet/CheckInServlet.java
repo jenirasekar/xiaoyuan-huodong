@@ -86,15 +86,17 @@ public class CheckInServlet extends HttpServlet {
             checkIn.setCheckinCode(checkinCode.trim());
             checkInDAO.create(checkIn);
 
-            // Award points
+            // Award points (guard against duplicates)
             Activity activity = activityDAO.findById(reg.getActivityId());
             if (activity != null && activity.getPoints() > 0) {
-                PointRecord record = new PointRecord();
-                record.setStudentId(reg.getStudentId());
-                record.setActivityId(reg.getActivityId());
-                record.setPoints(activity.getPoints());
-                record.setRemark("Activity check-in: " + activity.getTitle());
-                pointRecordDAO.create(record);
+                if (!pointRecordDAO.existsByStudentAndActivity(reg.getStudentId(), reg.getActivityId())) {
+                    PointRecord record = new PointRecord();
+                    record.setStudentId(reg.getStudentId());
+                    record.setActivityId(reg.getActivityId());
+                    record.setPoints(activity.getPoints());
+                    record.setRemark("Activity check-in: " + activity.getTitle());
+                    pointRecordDAO.create(record);
+                }
             }
 
             req.getSession().setAttribute("successMessage", "Check-in successful! Points awarded.");

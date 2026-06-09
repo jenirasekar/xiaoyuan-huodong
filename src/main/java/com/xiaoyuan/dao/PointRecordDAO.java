@@ -99,6 +99,22 @@ public class PointRecordDAO {
     }
 
     /**
+     * Check if a point record already exists for a student + activity combination.
+     */
+    public boolean existsByStudentAndActivity(int studentId, int activityId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM point_record WHERE student_id = ? AND activity_id = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, studentId);
+            stmt.setInt(2, activityId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Delete all point records for an activity.
      */
     public void deleteByActivity(int activityId) throws SQLException {
