@@ -264,18 +264,22 @@ public class ActivityDAO {
     }
 
     /**
-     * Check for time conflict: whether a student has another activity at the same time.
+     * Check for time conflict using interval overlap logic.
+     * Assumes every activity lasts 2 hours.
+     * Conflict exists if: newStart < existingEnd AND newEnd > existingStart.
      */
     public boolean hasTimeConflict(int studentId, LocalDateTime activityTime) throws SQLException {
         String sql = "SELECT COUNT(*) FROM activity a " +
                 "JOIN registration r ON a.id = r.activity_id " +
                 "WHERE r.student_id = ? AND r.status IN ('pending', 'approved') " +
-                "AND ABS(TIMESTAMPDIFF(MINUTE, a.activity_time, ?)) < 60";
+                "AND ? < DATE_ADD(a.activity_time, INTERVAL 2 HOUR) " +
+                "AND DATE_ADD(?, INTERVAL 2 HOUR) > a.activity_time";
 
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, studentId);
             stmt.setTimestamp(2, Timestamp.valueOf(activityTime));
+            stmt.setTimestamp(3, Timestamp.valueOf(activityTime));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) return rs.getInt(1) > 0;
             }

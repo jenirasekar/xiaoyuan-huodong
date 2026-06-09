@@ -104,7 +104,7 @@
                             <% Boolean timeConflict = (Boolean) request.getAttribute("timeConflict"); %>
                             <% if (timeConflict != null && timeConflict) { %>
                                 <div class="w-full py-2 mb-3 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm rounded-lg text-center">
-                                    ⚠️ This activity conflicts with another activity you are registered for (within 1 hour).
+                                    ⚠️ This activity overlaps with another activity you have registered for.
                                 </div>
                             <% } %>
                             <%-- Not registered yet --%>
