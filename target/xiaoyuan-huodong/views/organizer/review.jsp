@@ -6,8 +6,15 @@
     List<Registration> registrations = (List<Registration>) request.getAttribute("registrations");
     Activity selectedActivity = (Activity) request.getAttribute("activity");
     Integer selectedActivityId = (Integer) request.getAttribute("selectedActivityId");
+    String keyword = (String) request.getAttribute("keyword");
+    Integer currentPage = (Integer) request.getAttribute("currentPage");
+    Integer totalPages = (Integer) request.getAttribute("totalPages");
+    Integer totalCount = (Integer) request.getAttribute("totalCount");
     if (myActivities == null) myActivities = java.util.Collections.emptyList();
     if (registrations == null) registrations = java.util.Collections.emptyList();
+    if (currentPage == null) currentPage = 1;
+    if (totalPages == null) totalPages = 0;
+    if (totalCount == null) totalCount = 0;
 %>
 
 <div class="mb-6">
@@ -19,13 +26,24 @@
     <!-- Activity List Sidebar -->
     <div class="bg-white rounded-lg shadow p-4">
         <h2 class="text-sm font-semibold text-gray-700 mb-3">My Activities</h2>
-        <div class="space-y-1">
+        <!-- Sidebar search -->
+        <form action="<%= contextPath %>/reviews" method="get" class="mb-3">
+            <% if (selectedActivityId != null) { %>
+            <input type="hidden" name="activityId" value="<%= selectedActivityId %>">
+            <% } %>
+            <input type="text" name="keyword" value="<%= keyword != null ? keyword : "" %>"
+                   class="input-field text-sm py-1.5" placeholder="Search activities...">
+        </form>
+        <div class="space-y-1 max-h-96 overflow-y-auto">
             <% for (Activity act : myActivities) { %>
-                <a href="<%= contextPath %>/reviews?activityId=<%= act.getId() %>"
+                <a href="<%= contextPath %>/reviews?activityId=<%= act.getId() %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %>"
                    class="block px-3 py-2 rounded-lg text-sm <%= (selectedActivityId != null && selectedActivityId == act.getId()) ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-100" %>">
                     <%= act.getTitle() %>
                     <span class="text-xs text-gray-500 block"><%= act.getRegisteredCount() %> registered</span>
                 </a>
+            <% } %>
+            <% if (myActivities.isEmpty()) { %>
+                <p class="text-xs text-gray-400 px-3 py-2">No activities found.</p>
             <% } %>
         </div>
     </div>
@@ -41,7 +59,7 @@
             <div class="bg-white rounded-lg shadow p-6 mb-6">
                 <h2 class="text-lg font-semibold text-gray-800"><%= selectedActivity.getTitle() %></h2>
                 <div class="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                    <span>Total: <%= registrations.size() %></span>
+                    <span>Total: <%= totalCount %></span>
                     <span class="text-yellow-600">Pending: <%= registrations.stream().filter(r -> "pending".equals(r.getStatus())).count() %></span>
                     <span class="text-green-600">Approved: <%= registrations.stream().filter(r -> "approved".equals(r.getStatus())).count() %></span>
                     <span class="text-red-600">Rejected: <%= registrations.stream().filter(r -> "rejected".equals(r.getStatus())).count() %></span>
@@ -106,6 +124,28 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <% if (totalPages > 1) { %>
+            <div class="mt-6 flex justify-center">
+                <nav class="flex items-center space-x-1">
+                    <% if (currentPage > 1) { %>
+                        <a href="<%= contextPath %>/reviews?activityId=<%= selectedActivityId %>&page=<%= currentPage - 1 %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %>"
+                           class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100">← Prev</a>
+                    <% } %>
+                    <% for (int i = 1; i <= totalPages; i++) { %>
+                        <a href="<%= contextPath %>/reviews?activityId=<%= selectedActivityId %>&page=<%= i %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %>"
+                           class="px-3 py-2 rounded-lg text-sm <%= i == currentPage ? "bg-blue-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-100" %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                    <% if (currentPage < totalPages) { %>
+                        <a href="<%= contextPath %>/reviews?activityId=<%= selectedActivityId %>&page=<%= currentPage + 1 %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %>"
+                           class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100">Next →</a>
+                    <% } %>
+                </nav>
+            </div>
+            <% } %>
             <% } %>
         <% } %>
     </div>

@@ -24,7 +24,20 @@ public class RegistrationServlet extends HttpServlet {
         User user = (User) req.getSession().getAttribute("user");
 
         try {
-            req.setAttribute("registrations", registrationDAO.findByStudent(user.getId()));
+            int page = 1;
+            try {
+                page = Integer.parseInt(req.getParameter("page"));
+                if (page < 1) page = 1;
+            } catch (NumberFormatException ignored) {}
+
+            int pageSize = 10;
+            int offset = (page - 1) * pageSize;
+
+            req.setAttribute("registrations", registrationDAO.findByStudent(user.getId(), offset, pageSize));
+            int total = registrationDAO.countByStudent(user.getId());
+            req.setAttribute("currentPage", page);
+            req.setAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
+            req.setAttribute("totalCount", total);
             req.getRequestDispatcher("/views/student/my-registrations.jsp").forward(req, resp);
         } catch (Exception e) {
             req.setAttribute("error", "Failed to load registrations: " + e.getMessage());

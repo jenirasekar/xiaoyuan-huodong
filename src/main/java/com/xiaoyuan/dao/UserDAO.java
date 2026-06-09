@@ -65,9 +65,9 @@ public class UserDAO {
     }
 
     /**
-     * Get all users, optionally filtered by role.
+     * Get all users, optionally filtered by role, with search and pagination.
      */
-    public List<User> findAll(String roleFilter) throws SQLException {
+    public List<User> findAll(String roleFilter, String keyword, int offset, int limit) throws SQLException {
         List<User> users = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT id, username, password, real_name, email, role, created_at FROM user WHERE 1=1");
@@ -75,13 +75,25 @@ public class UserDAO {
         if (roleFilter != null && !roleFilter.isEmpty()) {
             sql.append(" AND role = ?");
         }
-        sql.append(" ORDER BY id ASC");
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND (username LIKE ? OR real_name LIKE ? OR email LIKE ?)");
+        }
+        sql.append(" ORDER BY id ASC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
             if (roleFilter != null && !roleFilter.isEmpty()) {
-                stmt.setString(1, roleFilter);
+                stmt.setString(idx++, roleFilter);
             }
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                stmt.setString(idx++, kw);
+                stmt.setString(idx++, kw);
+                stmt.setString(idx++, kw);
+            }
+            stmt.setInt(idx++, limit);
+            stmt.setInt(idx++, offset);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     users.add(mapRow(rs));
@@ -89,6 +101,43 @@ public class UserDAO {
             }
         }
         return users;
+    }
+
+    /**
+     * Count all users for pagination.
+     */
+    public int countAll(String roleFilter, String keyword) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM user WHERE 1=1");
+        if (roleFilter != null && !roleFilter.isEmpty()) {
+            sql.append(" AND role = ?");
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND (username LIKE ? OR real_name LIKE ? OR email LIKE ?)");
+        }
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (roleFilter != null && !roleFilter.isEmpty()) {
+                stmt.setString(idx++, roleFilter);
+            }
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                stmt.setString(idx++, kw);
+                stmt.setString(idx++, kw);
+                stmt.setString(idx++, kw);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Get all users, optionally filtered by role (non-paginated, backward compat).
+     */
+    public List<User> findAll(String roleFilter) throws SQLException {
+        return findAll(roleFilter, null, 0, Integer.MAX_VALUE);
     }
 
     /**

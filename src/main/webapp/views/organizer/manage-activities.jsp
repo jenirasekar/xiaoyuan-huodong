@@ -5,9 +5,17 @@
     List<Activity> activities = (List<Activity>) request.getAttribute("activities");
     List<ActivityCategory> categories = (List<ActivityCategory>) request.getAttribute("categories");
     Boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
+    Integer currentPage = (Integer) request.getAttribute("currentPage");
+    Integer totalPages = (Integer) request.getAttribute("totalPages");
+    Integer totalCount = (Integer) request.getAttribute("totalCount");
+    String keyword = (String) request.getAttribute("keyword");
+
     if (activities == null) activities = java.util.Collections.emptyList();
     if (categories == null) categories = java.util.Collections.emptyList();
     if (isAdmin == null) isAdmin = false;
+    if (currentPage == null) currentPage = 1;
+    if (totalPages == null) totalPages = 0;
+    if (totalCount == null) totalCount = 0;
 %>
 
 <div class="flex items-center justify-between mb-6">
@@ -16,6 +24,31 @@
         <p class="text-gray-600 mt-1">Manage and track activities</p>
     </div>
     <a href="<%= contextPath %>/manage-activities?action=create" class="btn btn-primary">+ New Activity</a>
+</div>
+
+<!-- Search -->
+<div class="bg-white rounded-lg shadow p-4 mb-6">
+    <form action="<%= contextPath %>/manage-activities" method="get" class="flex gap-3 items-end">
+        <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <input type="text" name="keyword" value="<%= keyword != null ? keyword : "" %>"
+                   class="input-field" placeholder="Search by title or location...">
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">🔍 Search</button>
+        </div>
+        <% if (keyword != null && !keyword.isEmpty()) { %>
+        <div>
+            <a href="<%= contextPath %>/manage-activities" class="btn btn-secondary">Clear</a>
+        </div>
+        <% } %>
+    </form>
+</div>
+
+<!-- Results info -->
+<div class="mb-4 text-sm text-gray-500">
+    Found <strong><%= totalCount %></strong> activities
+    <% if (totalPages > 1) { %> | Page <%= currentPage %> of <%= totalPages %><% } %>
 </div>
 
 <% if (activities.isEmpty()) { %>
@@ -69,6 +102,28 @@
         </tbody>
     </table>
 </div>
+
+<!-- Pagination -->
+<% if (totalPages > 1) { %>
+<div class="mt-6 flex justify-center">
+    <nav class="flex items-center space-x-1">
+        <% if (currentPage > 1) { %>
+            <a href="<%= contextPath %>/manage-activities?page=<%= currentPage - 1 %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %>"
+               class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100">← Prev</a>
+        <% } %>
+        <% for (int i = 1; i <= totalPages; i++) { %>
+            <a href="<%= contextPath %>/manage-activities?page=<%= i %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %>"
+               class="px-3 py-2 rounded-lg text-sm <%= i == currentPage ? "bg-blue-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-100" %>">
+                <%= i %>
+            </a>
+        <% } %>
+        <% if (currentPage < totalPages) { %>
+            <a href="<%= contextPath %>/manage-activities?page=<%= currentPage + 1 %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %>"
+               class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100">Next →</a>
+        <% } %>
+    </nav>
+</div>
+<% } %>
 <% } %>
 
 <%@ include file="../common/footer.jsp" %>

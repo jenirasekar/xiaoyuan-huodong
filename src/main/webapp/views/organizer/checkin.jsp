@@ -9,6 +9,7 @@
     List<CheckIn> checkIns = (List<CheckIn>) request.getAttribute("checkIns");
     Activity selectedActivity = (Activity) request.getAttribute("activity");
     Integer selectedActivityId = (Integer) request.getAttribute("selectedActivityId");
+    String keyword = (String) request.getAttribute("keyword");
     if (activityList == null) activityList = java.util.Collections.emptyList();
     if (registrations == null) registrations = java.util.Collections.emptyList();
     if (checkIns == null) checkIns = java.util.Collections.emptyList();
@@ -23,12 +24,23 @@
     <!-- Activity List Sidebar -->
     <div class="bg-white rounded-lg shadow p-4">
         <h2 class="text-sm font-semibold text-gray-700 mb-3">Activities</h2>
-        <div class="space-y-1">
+        <!-- Sidebar search -->
+        <form action="<%= contextPath %>/checkin" method="get" class="mb-3">
+            <% if (selectedActivityId != null) { %>
+            <input type="hidden" name="activityId" value="<%= selectedActivityId %>">
+            <% } %>
+            <input type="text" name="keyword" value="<%= keyword != null ? keyword : "" %>"
+                   class="input-field text-sm py-1.5" placeholder="Search activities...">
+        </form>
+        <div class="space-y-1 max-h-96 overflow-y-auto">
             <% for (Activity act : activityList) { %>
-                <a href="<%= contextPath %>/checkin?activityId=<%= act.getId() %>"
+                <a href="<%= contextPath %>/checkin?activityId=<%= act.getId() %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %>"
                    class="block px-3 py-2 rounded-lg text-sm <%= (selectedActivityId != null && selectedActivityId == act.getId()) ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-100" %>">
                     <%= act.getTitle() %>
                 </a>
+            <% } %>
+            <% if (activityList.isEmpty()) { %>
+                <p class="text-xs text-gray-400 px-3 py-2">No activities found.</p>
             <% } %>
         </div>
     </div>

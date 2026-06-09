@@ -89,49 +89,137 @@ public class ActivityDAO {
     }
 
     /**
-     * Find activities managed by a specific organizer.
+     * Find activities managed by a specific organizer with optional search and pagination.
      */
-    public List<Activity> findByOrganizer(int organizerId) throws SQLException {
-        String sql = "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
+    public List<Activity> findByOrganizer(int organizerId, String keyword, int offset, int limit) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+                "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
                 "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id AND r.status IN ('pending', 'approved')) AS registered_count " +
                 "FROM activity a " +
                 "JOIN user u ON a.organizer_id = u.id " +
                 "JOIN activity_category ac ON a.category_id = ac.id " +
-                "WHERE a.organizer_id = ? ORDER BY a.id ASC";
+                "WHERE a.organizer_id = ?");
+
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND (a.title LIKE ? OR a.location LIKE ?)");
+        }
+        sql.append(" ORDER BY a.created_at DESC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBConnectionManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, organizerId);
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            stmt.setInt(idx++, organizerId);
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                stmt.setString(idx++, kw);
+                stmt.setString(idx++, kw);
+            }
+            stmt.setInt(idx++, limit);
+            stmt.setInt(idx++, offset);
             List<Activity> activities = new ArrayList<>();
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    activities.add(mapRow(rs));
-                }
+                while (rs.next()) activities.add(mapRow(rs));
             }
             return activities;
         }
     }
 
     /**
-     * Find all activities (admin use).
+     * Count activities by organizer for pagination.
      */
-    public List<Activity> findAll() throws SQLException {
-        String sql = "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
+    public int countByOrganizer(int organizerId, String keyword) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) FROM activity a WHERE a.organizer_id = ?");
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND (a.title LIKE ? OR a.location LIKE ?)");
+        }
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            stmt.setInt(idx++, organizerId);
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                stmt.setString(idx++, kw);
+                stmt.setString(idx++, kw);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Find all activities (admin use) with optional search and pagination.
+     */
+    public List<Activity> findAll(String keyword, int offset, int limit) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+                "SELECT a.*, u.real_name AS organizer_name, ac.name AS category_name, " +
                 "(SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id AND r.status IN ('pending', 'approved')) AS registered_count " +
                 "FROM activity a " +
                 "JOIN user u ON a.organizer_id = u.id " +
                 "JOIN activity_category ac ON a.category_id = ac.id " +
-                "ORDER BY a.created_at ASC";
+                "WHERE 1=1");
+
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND (a.title LIKE ? OR a.location LIKE ? OR u.real_name LIKE ?)");
+        }
+        sql.append(" ORDER BY a.created_at DESC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBConnectionManager.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                stmt.setString(idx++, kw);
+                stmt.setString(idx++, kw);
+                stmt.setString(idx++, kw);
+            }
+            stmt.setInt(idx++, limit);
+            stmt.setInt(idx++, offset);
             List<Activity> activities = new ArrayList<>();
-            while (rs.next()) {
-                activities.add(mapRow(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) activities.add(mapRow(rs));
             }
             return activities;
         }
+    }
+
+    /**
+     * Count all activities for admin pagination.
+     */
+    public int countAll(String keyword) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM activity a JOIN user u ON a.organizer_id = u.id WHERE 1=1");
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND (a.title LIKE ? OR a.location LIKE ? OR u.real_name LIKE ?)");
+        }
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            if (keyword != null && !keyword.isEmpty()) {
+                String kw = "%" + keyword + "%";
+                stmt.setString(1, kw);
+                stmt.setString(2, kw);
+                stmt.setString(3, kw);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Find all activities, non-paginated (backward compat).
+     */
+    public List<Activity> findAll() throws SQLException {
+        return findAll(null, 0, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Find activities by organizer, non-paginated (backward compat).
+     */
+    public List<Activity> findByOrganizer(int organizerId) throws SQLException {
+        return findByOrganizer(organizerId, null, 0, Integer.MAX_VALUE);
     }
 
     /**

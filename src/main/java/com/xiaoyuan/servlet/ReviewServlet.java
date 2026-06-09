@@ -23,21 +23,37 @@ public class ReviewServlet extends HttpServlet {
 
         try {
             String activityIdStr = req.getParameter("activityId");
+            String keyword = req.getParameter("keyword");
 
+            // Load sidebar activities with search
             if ("admin".equals(user.getRole())) {
-                // Admin can see all
-                req.setAttribute("myActivities", activityDAO.findAll());
+                req.setAttribute("myActivities", activityDAO.findAll(keyword, 0, 50));
             } else {
-                req.setAttribute("myActivities", activityDAO.findByOrganizer(user.getId()));
+                req.setAttribute("myActivities", activityDAO.findByOrganizer(user.getId(), keyword, 0, 50));
             }
 
             if (activityIdStr != null && !activityIdStr.isEmpty()) {
                 int activityId = Integer.parseInt(activityIdStr);
+
+                int page = 1;
+                try {
+                    page = Integer.parseInt(req.getParameter("page"));
+                    if (page < 1) page = 1;
+                } catch (NumberFormatException ignored) {}
+
+                int pageSize = 15;
+                int offset = (page - 1) * pageSize;
+
                 req.setAttribute("selectedActivityId", activityId);
-                req.setAttribute("registrations", registrationDAO.findByActivity(activityId));
+                req.setAttribute("registrations", registrationDAO.findByActivity(activityId, keyword, offset, pageSize));
+                int total = registrationDAO.countByActivity(activityId, keyword);
+                req.setAttribute("currentPage", page);
+                req.setAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
+                req.setAttribute("totalCount", total);
                 req.setAttribute("activity", activityDAO.findById(activityId));
             }
 
+            req.setAttribute("keyword", keyword);
             req.getRequestDispatcher("/views/organizer/review.jsp").forward(req, resp);
         } catch (Exception e) {
             req.setAttribute("error", "Failed to load reviews: " + e.getMessage());

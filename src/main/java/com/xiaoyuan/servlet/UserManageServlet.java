@@ -29,8 +29,24 @@ public class UserManageServlet extends HttpServlet {
                 }
             }
             String roleFilter = req.getParameter("role");
-            req.setAttribute("users", userDAO.findAll(roleFilter));
+            String keyword = req.getParameter("keyword");
+
+            int page = 1;
+            try {
+                page = Integer.parseInt(req.getParameter("page"));
+                if (page < 1) page = 1;
+            } catch (NumberFormatException ignored) {}
+
+            int pageSize = 10;
+            int offset = (page - 1) * pageSize;
+
+            req.setAttribute("users", userDAO.findAll(roleFilter, keyword, offset, pageSize));
+            int total = userDAO.countAll(roleFilter, keyword);
+            req.setAttribute("currentPage", page);
+            req.setAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
+            req.setAttribute("totalCount", total);
             req.setAttribute("roleFilter", roleFilter);
+            req.setAttribute("keyword", keyword);
             req.getRequestDispatcher("/views/admin/users.jsp").forward(req, resp);
         } catch (Exception e) {
             req.setAttribute("error", "Failed to load users: " + e.getMessage());

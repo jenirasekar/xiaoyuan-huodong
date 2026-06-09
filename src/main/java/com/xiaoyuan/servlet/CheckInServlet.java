@@ -23,10 +23,12 @@ public class CheckInServlet extends HttpServlet {
         User user = (User) req.getSession().getAttribute("user");
 
         try {
+            String keyword = req.getParameter("keyword");
+
             if ("admin".equals(user.getRole())) {
-                req.setAttribute("allActivities", activityDAO.findAll());
+                req.setAttribute("allActivities", activityDAO.findAll(keyword, 0, 50));
             } else {
-                req.setAttribute("myActivities", activityDAO.findByOrganizer(user.getId()));
+                req.setAttribute("myActivities", activityDAO.findByOrganizer(user.getId(), keyword, 0, 50));
             }
 
             String activityIdStr = req.getParameter("activityId");
@@ -38,6 +40,7 @@ public class CheckInServlet extends HttpServlet {
                 req.setAttribute("checkIns", checkInDAO.findByActivity(activityId));
             }
 
+            req.setAttribute("keyword", keyword);
             req.getRequestDispatcher("/views/organizer/checkin.jsp").forward(req, resp);
         } catch (Exception e) {
             req.setAttribute("error", "Failed to load check-in data: " + e.getMessage());

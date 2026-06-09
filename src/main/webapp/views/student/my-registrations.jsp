@@ -4,13 +4,25 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%
     List<Registration> registrations = (List<Registration>) request.getAttribute("registrations");
+    Integer currentPage = (Integer) request.getAttribute("currentPage");
+    Integer totalPages = (Integer) request.getAttribute("totalPages");
+    Integer totalCount = (Integer) request.getAttribute("totalCount");
     if (registrations == null) registrations = java.util.Collections.emptyList();
+    if (currentPage == null) currentPage = 1;
+    if (totalPages == null) totalPages = 0;
+    if (totalCount == null) totalCount = 0;
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 %>
 
 <div class="mb-6">
     <h1 class="text-2xl font-bold text-gray-800">My Registrations</h1>
     <p class="text-gray-600 mt-1">Track your activity registrations and check-in status</p>
+</div>
+
+<!-- Results info -->
+<div class="mb-4 text-sm text-gray-500">
+    Found <strong><%= totalCount %></strong> registrations
+    <% if (totalPages > 1) { %> | Page <%= currentPage %> of <%= totalPages %><% } %>
 </div>
 
 <% if (registrations.isEmpty()) { %>
@@ -88,6 +100,28 @@
         </tbody>
     </table>
 </div>
+
+<!-- Pagination -->
+<% if (totalPages > 1) { %>
+<div class="mt-6 flex justify-center">
+    <nav class="flex items-center space-x-1">
+        <% if (currentPage > 1) { %>
+            <a href="<%= contextPath %>/registrations?page=<%= currentPage - 1 %>"
+               class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100">← Prev</a>
+        <% } %>
+        <% for (int i = 1; i <= totalPages; i++) { %>
+            <a href="<%= contextPath %>/registrations?page=<%= i %>"
+               class="px-3 py-2 rounded-lg text-sm <%= i == currentPage ? "bg-blue-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-100" %>">
+                <%= i %>
+            </a>
+        <% } %>
+        <% if (currentPage < totalPages) { %>
+            <a href="<%= contextPath %>/registrations?page=<%= currentPage + 1 %>"
+               class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100">Next →</a>
+        <% } %>
+    </nav>
+</div>
+<% } %>
 <% } %>
 
 <%@ include file="../common/footer.jsp" %>

@@ -82,13 +82,29 @@ public class ActivityManageServlet extends HttpServlet {
             throws Exception {
         User user = (User) req.getSession().getAttribute("user");
 
+        String keyword = req.getParameter("keyword");
+        int page = 1;
+        try {
+            page = Integer.parseInt(req.getParameter("page"));
+            if (page < 1) page = 1;
+        } catch (NumberFormatException ignored) {}
+
+        int pageSize = 10;
+        int offset = (page - 1) * pageSize;
+
         if ("admin".equals(user.getRole())) {
-            req.setAttribute("activities", activityDAO.findAll());
+            req.setAttribute("activities", activityDAO.findAll(keyword, offset, pageSize));
+            req.setAttribute("totalCount", activityDAO.countAll(keyword));
             req.setAttribute("isAdmin", true);
         } else {
-            req.setAttribute("activities", activityDAO.findByOrganizer(user.getId()));
+            req.setAttribute("activities", activityDAO.findByOrganizer(user.getId(), keyword, offset, pageSize));
+            req.setAttribute("totalCount", activityDAO.countByOrganizer(user.getId(), keyword));
             req.setAttribute("isAdmin", false);
         }
+        int total = (Integer) req.getAttribute("totalCount");
+        req.setAttribute("currentPage", page);
+        req.setAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
+        req.setAttribute("keyword", keyword);
         req.setAttribute("categories", categoryDAO.findAll());
         req.getRequestDispatcher("/views/organizer/manage-activities.jsp").forward(req, resp);
     }

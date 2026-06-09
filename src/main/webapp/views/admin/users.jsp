@@ -5,7 +5,14 @@
     List<User> users = (List<User>) request.getAttribute("users");
     User editUser = (User) request.getAttribute("editUser");
     String roleFilter = (String) request.getAttribute("roleFilter");
+    String keyword = (String) request.getAttribute("keyword");
+    Integer currentPage = (Integer) request.getAttribute("currentPage");
+    Integer totalPages = (Integer) request.getAttribute("totalPages");
+    Integer totalCount = (Integer) request.getAttribute("totalCount");
     if (users == null) users = java.util.Collections.emptyList();
+    if (currentPage == null) currentPage = 1;
+    if (totalPages == null) totalPages = 0;
+    if (totalCount == null) totalCount = 0;
 %>
 
 <div class="flex items-center justify-between mb-6">
@@ -16,13 +23,38 @@
     <button onclick="showUserModal()" class="btn btn-primary">+ Add User</button>
 </div>
 
-<!-- Role Filter -->
-<div class="bg-white rounded-lg shadow p-3 mb-4 flex items-center gap-2">
-    <span class="text-sm text-gray-600">Filter:</span>
-    <a href="<%= contextPath %>/admin/users" class="text-sm px-3 py-1 rounded <%= roleFilter == null ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200" %>">All</a>
-    <a href="<%= contextPath %>/admin/users?role=student" class="text-sm px-3 py-1 rounded <%= "student".equals(roleFilter) ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200" %>">Students</a>
-    <a href="<%= contextPath %>/admin/users?role=organizer" class="text-sm px-3 py-1 rounded <%= "organizer".equals(roleFilter) ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200" %>">Organizers</a>
-    <a href="<%= contextPath %>/admin/users?role=admin" class="text-sm px-3 py-1 rounded <%= "admin".equals(roleFilter) ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200" %>">Admins</a>
+<!-- Search & Filter -->
+<div class="bg-white rounded-lg shadow p-4 mb-4">
+    <form action="<%= contextPath %>/admin/users" method="get" class="flex flex-wrap gap-3 items-end">
+        <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <input type="text" name="keyword" value="<%= keyword != null ? keyword : "" %>"
+                   class="input-field" placeholder="Search by username, name or email...">
+        </div>
+        <div class="w-36">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+            <select name="role" class="input-field">
+                <option value="">All</option>
+                <option value="student" <%= "student".equals(roleFilter) ? "selected" : "" %>>Students</option>
+                <option value="organizer" <%= "organizer".equals(roleFilter) ? "selected" : "" %>>Organizers</option>
+                <option value="admin" <%= "admin".equals(roleFilter) ? "selected" : "" %>>Admins</option>
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">🔍 Search</button>
+        </div>
+        <% if ((keyword != null && !keyword.isEmpty()) || (roleFilter != null && !roleFilter.isEmpty())) { %>
+        <div>
+            <a href="<%= contextPath %>/admin/users" class="btn btn-secondary">Clear</a>
+        </div>
+        <% } %>
+    </form>
+</div>
+
+<!-- Results info -->
+<div class="mb-4 text-sm text-gray-500">
+    Found <strong><%= totalCount %></strong> users
+    <% if (totalPages > 1) { %> | Page <%= currentPage %> of <%= totalPages %><% } %>
 </div>
 
 <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -73,6 +105,28 @@
         </tbody>
     </table>
 </div>
+
+<!-- Pagination -->
+<% if (totalPages > 1) { %>
+<div class="mt-6 flex justify-center">
+    <nav class="flex items-center space-x-1">
+        <% if (currentPage > 1) { %>
+            <a href="<%= contextPath %>/admin/users?page=<%= currentPage - 1 %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %><%= roleFilter != null ? "&role=" + roleFilter : "" %>"
+               class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100">← Prev</a>
+        <% } %>
+        <% for (int i = 1; i <= totalPages; i++) { %>
+            <a href="<%= contextPath %>/admin/users?page=<%= i %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %><%= roleFilter != null ? "&role=" + roleFilter : "" %>"
+               class="px-3 py-2 rounded-lg text-sm <%= i == currentPage ? "bg-blue-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-100" %>">
+                <%= i %>
+            </a>
+        <% } %>
+        <% if (currentPage < totalPages) { %>
+            <a href="<%= contextPath %>/admin/users?page=<%= currentPage + 1 %><%= keyword != null ? "&keyword=" + java.net.URLEncoder.encode(keyword, "UTF-8") : "" %><%= roleFilter != null ? "&role=" + roleFilter : "" %>"
+               class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100">Next →</a>
+        <% } %>
+    </nav>
+</div>
+<% } %>
 
 <!-- User Modal -->
 <div id="userModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">

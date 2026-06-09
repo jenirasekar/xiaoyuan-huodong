@@ -57,7 +57,103 @@ public class RegistrationDAO {
     }
 
     /**
-     * Find registrations by student.
+     * Find registrations by student with pagination.
+     */
+    public List<Registration> findByStudent(int studentId, int offset, int limit) throws SQLException {
+        String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
+                "a.activity_time, a.location AS activity_location, a.status AS activity_status, " +
+                "(SELECT COUNT(*) FROM checkin c WHERE c.registration_id = r.id) > 0 AS checked_in " +
+                "FROM registration r " +
+                "JOIN user u ON r.student_id = u.id " +
+                "JOIN activity a ON r.activity_id = a.id " +
+                "WHERE r.student_id = ? ORDER BY r.registered_at DESC LIMIT ? OFFSET ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, studentId);
+            stmt.setInt(2, limit);
+            stmt.setInt(3, offset);
+            List<Registration> registrations = new ArrayList<>();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) registrations.add(mapRow(rs));
+            }
+            return registrations;
+        }
+    }
+
+    /**
+     * Count registrations by student for pagination.
+     */
+    public int countByStudent(int studentId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM registration WHERE student_id = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, studentId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Find registrations by activity with search and pagination (for organizer review).
+     */
+    public List<Registration> findByActivity(int activityId, String keyword, int offset, int limit) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+                "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
+                "a.activity_time, a.location AS activity_location, a.status AS activity_status, " +
+                "(SELECT COUNT(*) FROM checkin c WHERE c.registration_id = r.id) > 0 AS checked_in " +
+                "FROM registration r " +
+                "JOIN user u ON r.student_id = u.id " +
+                "JOIN activity a ON r.activity_id = a.id " +
+                "WHERE r.activity_id = ?");
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND u.real_name LIKE ?");
+        }
+        sql.append(" ORDER BY r.registered_at ASC LIMIT ? OFFSET ?");
+
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            stmt.setInt(idx++, activityId);
+            if (keyword != null && !keyword.isEmpty()) {
+                stmt.setString(idx++, "%" + keyword + "%");
+            }
+            stmt.setInt(idx++, limit);
+            stmt.setInt(idx++, offset);
+            List<Registration> registrations = new ArrayList<>();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) registrations.add(mapRow(rs));
+            }
+            return registrations;
+        }
+    }
+
+    /**
+     * Count registrations by activity for pagination.
+     */
+    public int countByActivity(int activityId, String keyword) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) FROM registration r JOIN user u ON r.student_id = u.id WHERE r.activity_id = ?");
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND u.real_name LIKE ?");
+        }
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            stmt.setInt(idx++, activityId);
+            if (keyword != null && !keyword.isEmpty()) {
+                stmt.setString(idx++, "%" + keyword + "%");
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Find registrations by student (non-paginated, backward compat).
      */
     public List<Registration> findByStudent(int studentId) throws SQLException {
         String sql = "SELECT r.*, u.real_name AS student_name, a.title AS activity_title, " +
