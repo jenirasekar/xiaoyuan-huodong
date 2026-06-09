@@ -402,9 +402,10 @@ public class ActivityDAO {
      */
     public List<Object[]> countByCategory() throws SQLException {
         String sql = "SELECT ac.name, COUNT(a.id), " +
-                "COALESCE(SUM((SELECT COUNT(*) FROM registration r WHERE r.activity_id = a.id)), 0) " +
+                "COALESCE(SUM((SELECT COUNT(*) FROM registration r " +
+                "WHERE r.activity_id = a.id AND r.status IN ('pending','approved'))), 0) " +
                 "FROM activity_category ac " +
-                "LEFT JOIN activity a ON ac.id = a.category_id " +
+                "LEFT JOIN activity a ON ac.id = a.category_id AND a.status NOT IN ('deleted','cancelled') " +
                 "GROUP BY ac.id, ac.name ORDER BY COUNT(a.id) DESC";
 
         try (Connection conn = DBConnectionManager.getConnection();

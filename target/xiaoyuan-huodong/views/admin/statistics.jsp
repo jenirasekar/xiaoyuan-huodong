@@ -48,12 +48,12 @@
         <% } else { %>
         <div class="space-y-3">
             <% long maxCount = 0;
-               for (Object[] row : categoryStats) maxCount = Math.max(maxCount, ((Number) row[1]).longValue());
+               for (Object[] row : categoryStats) maxCount = Math.max(maxCount, ((Number) row[2]).longValue());
                for (Object[] row : categoryStats) {
                    String name = (String) row[0];
                    long count = ((Number) row[1]).longValue();
                    long regCount = ((Number) row[2]).longValue();
-                   int pct = maxCount > 0 ? (int) (count * 100 / maxCount) : 0;
+                   int pct = maxCount > 0 ? (int) (regCount * 100 / maxCount) : 0;
             %>
             <div>
                 <div class="flex justify-between text-sm mb-1">
