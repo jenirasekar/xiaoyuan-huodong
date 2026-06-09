@@ -11,6 +11,7 @@
   <component name="ChangeListManager">
     <list default="true" id="430b4601-fa6c-481c-8390-62a11a4916f3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/servlet/PointsServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/xiaoyuan/servlet/PointsServlet.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

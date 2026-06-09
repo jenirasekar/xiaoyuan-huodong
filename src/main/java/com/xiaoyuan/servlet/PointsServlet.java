@@ -29,8 +29,8 @@ public class PointsServlet extends HttpServlet {
                 req.setAttribute("myRecords", pointRecordDAO.findByStudent(user.getId()));
                 req.getRequestDispatcher("/views/student/my-points.jsp").forward(req, resp);
             } else {
-                // Organizer and admin view
-                req.getRequestDispatcher("/views/admin/statistics.jsp").forward(req, resp);
+                // Organizer and admin view — dedicated leaderboard page
+                req.getRequestDispatcher("/views/admin/leaderboard.jsp").forward(req, resp);
             }
 
         } catch (Exception e) {
