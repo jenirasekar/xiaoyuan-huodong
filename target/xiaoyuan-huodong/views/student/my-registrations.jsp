@@ -78,7 +78,14 @@
                     <% } %>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-500 max-w-[200px] truncate">
-                    <%= reg.getReviewComment() != null ? reg.getReviewComment() : "-" %>
+                    <% if ("rejected".equals(reg.getStatus()) && reg.getReviewComment() != null && !reg.getReviewComment().isEmpty()) { %>
+                        <button onclick="viewComment('<%= reg.getActivityTitle().replace("\\", "\\\\").replace("'", "\\'") %>', '<%= reg.getReviewComment().replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n").replace("\r", "") %>')"
+                                class="text-red-600 hover:text-red-800 underline cursor-pointer text-left" title="View rejection reason">
+                            <%= reg.getReviewComment() %>
+                        </button>
+                    <% } else { %>
+                        <%= reg.getReviewComment() != null ? reg.getReviewComment() : "-" %>
+                    <% } %>
                 </td>
                 <td class="px-4 py-3">
                     <% if ("pending".equals(reg.getStatus())) { %>
@@ -123,5 +130,35 @@
 </div>
 <% } %>
 <% } %>
+
+<!-- View Comment Modal -->
+<div id="viewCommentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Rejection Comment</h3>
+            <button onclick="document.getElementById('viewCommentModal').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+        <div class="mb-2">
+            <span class="text-xs text-gray-500">Activity: </span>
+            <span id="commentActivityTitle" class="text-sm font-medium text-gray-800"></span>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mt-2">
+            <p id="commentText" class="text-sm text-gray-700 whitespace-pre-wrap"></p>
+        </div>
+        <div class="flex justify-end mt-4">
+            <button type="button" onclick="document.getElementById('viewCommentModal').classList.add('hidden')"
+                    class="btn btn-secondary text-sm">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewComment(title, comment) {
+    document.getElementById('commentActivityTitle').textContent = title;
+    document.getElementById('commentText').textContent = comment;
+    document.getElementById('viewCommentModal').classList.remove('hidden');
+}
+</script>
 
 <%@ include file="../common/footer.jsp" %>

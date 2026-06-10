@@ -164,7 +164,7 @@ public class ActivityDAO {
         if (keyword != null && !keyword.isEmpty()) {
             sql.append(" AND (a.title LIKE ? OR a.location LIKE ? OR u.real_name LIKE ?)");
         }
-        sql.append(" ORDER BY a.id DESC LIMIT ? OFFSET ?");
+        sql.append(" ORDER BY a.created_at DESC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
