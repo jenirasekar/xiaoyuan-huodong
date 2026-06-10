@@ -46,25 +46,54 @@
         <% if (categoryStats.isEmpty()) { %>
             <p class="text-gray-500 text-sm">No data yet.</p>
         <% } else { %>
-        <div class="space-y-3">
-            <% long maxCount = 0;
-               for (Object[] row : categoryStats) maxCount = Math.max(maxCount, ((Number) row[2]).longValue());
-               for (Object[] row : categoryStats) {
-                   String name = (String) row[0];
-                   long count = ((Number) row[1]).longValue();
-                   long regCount = ((Number) row[2]).longValue();
-                   int pct = maxCount > 0 ? (int) (regCount * 100 / maxCount) : 0;
-            %>
-            <div>
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium text-gray-700"><%= name %></span>
-                    <span class="text-gray-500"><%= count %> activities, <%= regCount %> registrations</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-600 h-2 rounded-full" style="width: <%= pct %>%"></div>
-                </div>
-            </div>
-            <% } %>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="text-xs font-medium text-gray-500 uppercase border-b">
+                        <th class="py-2 text-left">Category</th>
+                        <th class="py-2 text-center w-20">Activities</th>
+                        <th class="py-2 text-center w-20">Participants</th>
+                        <th class="py-2 text-center w-20">Check-ins</th>
+                        <th class="py-2 text-center w-20">Absences</th>
+                        <th class="py-2 text-left w-40">Check-in Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (Object[] row : categoryStats) {
+                        String name = (String) row[0];
+                        long actCount = ((Number) row[1]).longValue();
+                        long participantCount = ((Number) row[2]).longValue();
+                        long checkinCount = ((Number) row[3]).longValue();
+                        long absenceCount = participantCount - checkinCount;
+                        int ratePct = participantCount > 0 ? (int) (checkinCount * 100 / participantCount) : 0;
+                        String rateColor = ratePct >= 80 ? "bg-green-500" : ratePct >= 50 ? "bg-yellow-500" : "bg-red-500";
+                    %>
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td class="py-3 text-sm font-medium text-gray-700"><%= name %></td>
+                        <td class="py-3 text-center">
+                            <span class="text-sm font-semibold text-blue-600"><%= actCount %></span>
+                        </td>
+                        <td class="py-3 text-center">
+                            <span class="text-sm text-gray-700"><%= participantCount %></span>
+                        </td>
+                        <td class="py-3 text-center">
+                            <span class="text-sm font-medium text-green-600"><%= checkinCount %></span>
+                        </td>
+                        <td class="py-3 text-center">
+                            <span class="text-sm <%= absenceCount > 0 ? "text-red-500 font-medium" : "text-gray-400" %>"><%= absenceCount %></span>
+                        </td>
+                        <td class="py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="<%= rateColor %> h-2 rounded-full" style="width: <%= ratePct %>%"></div>
+                                </div>
+                                <span class="text-xs text-gray-500 w-8 text-right"><%= ratePct %>%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
         </div>
         <% } %>
     </div>

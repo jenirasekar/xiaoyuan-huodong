@@ -403,7 +403,10 @@ public class ActivityDAO {
     public List<Object[]> countByCategory() throws SQLException {
         String sql = "SELECT ac.name, COUNT(a.id), " +
                 "COALESCE(SUM((SELECT COUNT(*) FROM registration r " +
-                "WHERE r.activity_id = a.id AND r.status IN ('pending','approved'))), 0) " +
+                "WHERE r.activity_id = a.id AND r.status = 'approved')), 0), " +
+                "COALESCE(SUM((SELECT COUNT(*) FROM checkin c " +
+                "JOIN registration r ON c.registration_id = r.id " +
+                "WHERE r.activity_id = a.id)), 0) " +
                 "FROM activity_category ac " +
                 "LEFT JOIN activity a ON ac.id = a.category_id AND a.status NOT IN ('deleted','cancelled') " +
                 "GROUP BY ac.id, ac.name ORDER BY COUNT(a.id) DESC";
@@ -413,7 +416,9 @@ public class ActivityDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
             List<Object[]> results = new ArrayList<>();
             while (rs.next()) {
-                results.add(new Object[]{rs.getString(1), rs.getInt(2), rs.getLong(3)});
+                results.add(new Object[]{
+                        rs.getString(1), rs.getInt(2), rs.getLong(3), rs.getLong(4)
+                });
             }
             return results;
         }
