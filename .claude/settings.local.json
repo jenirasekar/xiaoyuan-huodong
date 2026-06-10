@@ -24,7 +24,11 @@
       "Bash(echo \"Dashboard JSP synced: $?\")",
       "Bash(mvn compile *)",
       "Bash(./mvnw compile *)",
-      "Bash(where mvn *)"
+      "Bash(where mvn *)",
+      "Bash(pip install *)",
+      "Bash(python -c \"from docx import Document; doc = Document\\(r'D:\\\\tugas kuliah\\\\sem4\\\\web-app\\\\Per_Student_Submission_Contents\\\\Web应用系统设计实训报告 - Copy.docx'\\); [print\\(f'[{i}] [{p.style.name}] {p.text}'\\) for i, p in enumerate\\(doc.paragraphs\\)]; [print\\(f'\\\\nTable {ti}:'\\) or [print\\(f'  Row {ri}: {[c.text for c in row.cells]}'\\) for ri, row in enumerate\\(table.rows\\)] for ti, table in enumerate\\(doc.tables\\)]\")",
+      "PowerShell(& \"C:\\\\Users\\\\skar4\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" -m pip install python-docx 2>&1 | Select-Object -Last 3)",
+      "PowerShell($env:PYTHONIOENCODING='utf-8'; & \"C:\\\\Users\\\\skar4\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" \"D:\\\\tugas kuliah\\\\sem4\\\\web-app\\\\xiaoyuan-huodong\\\\build_report.py\")"
     ]
   }
 }
