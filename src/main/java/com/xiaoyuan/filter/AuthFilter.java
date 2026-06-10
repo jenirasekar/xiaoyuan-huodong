@@ -30,7 +30,7 @@ public class AuthFilter implements Filter {
     ));
 
     private static final Set<String> ORGANIZER_URLS = new HashSet<>(Arrays.asList(
-            "/manage-activities", "/reviews", "/checkin"
+            "/manage-activities", "/reviews", "/checkin", "/export"
     ));
 
     @Override

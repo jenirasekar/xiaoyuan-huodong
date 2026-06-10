@@ -152,6 +152,17 @@
         <url-pattern>/admin/users/*</url-pattern>
     </servlet-mapping>
 
+    <!-- Excel Export Servlet -->
+    <servlet>
+        <servlet-name>ExportServlet</servlet-name>
+        <servlet-class>com.xiaoyuan.servlet.ExportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ExportServlet</servlet-name>
+        <url-pattern>/export</url-pattern>
+        <url-pattern>/export/*</url-pattern>
+    </servlet-mapping>
+
     <!-- Category Management Servlet (Admin) -->
     <servlet>
         <servlet-name>CategoryServlet</servlet-name>

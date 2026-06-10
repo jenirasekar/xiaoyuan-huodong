@@ -57,7 +57,13 @@
             </div>
         <% } else { %>
             <div class="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 class="text-lg font-semibold text-gray-800"><%= selectedActivity.getTitle() %></h2>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800"><%= selectedActivity.getTitle() %></h2>
+                    <a href="<%= contextPath %>/export?activityId=<%= selectedActivity.getId() %>"
+                       class="btn bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg inline-flex items-center gap-1">
+                        📥 Export Excel
+                    </a>
+                </div>
                 <div class="flex items-center gap-4 mt-2 text-sm text-gray-500">
                     <span>Total: <%= totalCount %></span>
                     <span class="text-yellow-600">Pending: <%= registrations.stream().filter(r -> "pending".equals(r.getStatus())).count() %></span>
