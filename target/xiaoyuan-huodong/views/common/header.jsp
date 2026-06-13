@@ -4,10 +4,11 @@
     User sessionUser = (User) session.getAttribute("user");
     String currentRole = (String) session.getAttribute("role");
     String contextPath = request.getContextPath();
+    // Strip context path for reliable sidebar active matching (same approach as AuthFilter)
+    String currentPath = request.getRequestURI().substring(contextPath.length());
 
     // Guard: if not logged in, redirect to login with current page as redirect target
     if (sessionUser == null) {
-        String currentPath = request.getRequestURI().substring(contextPath.length());
         response.sendRedirect(contextPath + "/login?redirect=" + java.net.URLEncoder.encode(currentPath, "UTF-8"));
         return;
     }
@@ -87,54 +88,54 @@
     <!-- Sidebar -->
     <aside style="width:16rem; flex-shrink:0" class="bg-white shadow-sm border-r border-gray-200 p-4">
         <nav class="space-y-1">
-            <a href="<%= contextPath %>/dashboard" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().endsWith("/dashboard") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+            <a href="<%= contextPath %>/dashboard" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/dashboard") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                 📊 Dashboard
             </a>
 
             <% if ("student".equals(currentRole)) { %>
-                <a href="<%= contextPath %>/activities" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/activities") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/activities" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/activities") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📅 Browse Activities
                 </a>
-                <a href="<%= contextPath %>/registrations" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/registrations") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/registrations" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/registrations") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📝 My Registrations
                 </a>
-                <a href="<%= contextPath %>/self-checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/self-checkin") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/self-checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/self-checkin") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     🏷️ Self Check-in
                 </a>
-                <a href="<%= contextPath %>/points" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/points") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/points" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/points") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     ⭐ My Points
                 </a>
             <% } else if ("organizer".equals(currentRole)) { %>
-                <a href="<%= contextPath %>/manage-activities" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("manage-activities") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/manage-activities" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/manage-activities") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📅 Manage Activities
                 </a>
-                <a href="<%= contextPath %>/reviews" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/reviews") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/reviews" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/reviews") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     ✅ Review Registrations
                 </a>
-                <a href="<%= contextPath %>/checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/checkin") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/checkin") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     🏷️ Check-in
                 </a>
             <% } else if ("admin".equals(currentRole)) { %>
-                <a href="<%= contextPath %>/manage-activities" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("manage-activities") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/manage-activities" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/manage-activities") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📅 All Activities
                 </a>
-                <a href="<%= contextPath %>/reviews" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/reviews") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/reviews" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/reviews") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     ✅ Reviews
                 </a>
-                <a href="<%= contextPath %>/checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/checkin") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/checkin") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     🏷️ Check-in
                 </a>
                 <div class="pt-2 mt-2 border-t border-gray-200"></div>
-                <a href="<%= contextPath %>/admin/users" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/admin/users") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/admin/users" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/admin/users") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     👥 User Management
                 </a>
-                <a href="<%= contextPath %>/admin/categories" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/admin/categories") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/admin/categories" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/admin/categories") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📂 Categories
                 </a>
-                <a href="<%= contextPath %>/statistics" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/statistics") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/statistics" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/statistics") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📈 Statistics
                 </a>
-                <a href="<%= contextPath %>/points" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= request.getRequestURI().contains("/points") ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/points" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= currentPath.contains("/points") ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     ⭐ Leaderboard
                 </a>
             <% } %>
