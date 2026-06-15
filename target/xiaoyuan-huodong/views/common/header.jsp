@@ -11,8 +11,6 @@
     if (currentPath.contains("?")) currentPath = currentPath.substring(0, currentPath.indexOf("?"));
     if (currentPath.endsWith("/") && currentPath.length() > 1) currentPath = currentPath.substring(0, currentPath.length() - 1);
 
-    System.out.println("DEBUG currentPath: [ " + currentPath + " ]");
-
     // Guard: if not logged in, redirect to login with current page as redirect target
     if (sessionUser == null) {
         response.sendRedirect(contextPath + "/login?redirect=" + java.net.URLEncoder.encode(currentPath, "UTF-8"));
@@ -102,7 +100,7 @@
                 <a href="<%= contextPath %>/activities" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= "/activities".equals(currentPath) ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📅 Browse Activities
                 </a>
-                <a href="<%= contextPath %>/registrations" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= "/registration".equals(currentPath) ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/registrations" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= "/registrations".equals(currentPath) ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📝 My Registrations
                 </a>
                 <a href="<%= contextPath %>/self-checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= "/self-checkin".equals(currentPath) ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">

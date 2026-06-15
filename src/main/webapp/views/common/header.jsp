@@ -100,7 +100,7 @@
                 <a href="<%= contextPath %>/activities" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= "/activities".equals(currentPath) ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📅 Browse Activities
                 </a>
-                <a href="<%= contextPath %>/registrations" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= "/registration".equals(currentPath) ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
+                <a href="<%= contextPath %>/registrations" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= "/registrations".equals(currentPath) ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
                     📝 My Registrations
                 </a>
                 <a href="<%= contextPath %>/self-checkin" class="block px-3 py-2 rounded-lg text-sm font-medium no-underline <%= "/self-checkin".equals(currentPath) ? "bg-blue-100 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-100" %>">
