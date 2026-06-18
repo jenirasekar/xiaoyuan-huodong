@@ -14,7 +14,7 @@ public class ActivityCategoryDAO {
 
     public List<ActivityCategory> findAll() throws SQLException {
         List<ActivityCategory> categories = new ArrayList<>();
-        String sql = "SELECT id, name, description FROM activity_category ORDER BY name";
+        String sql = "SELECT id, name, description, status FROM activity_category WHERE status = 'active' ORDER BY name";
         try (Connection conn = DBConnectionManager.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -26,7 +26,7 @@ public class ActivityCategoryDAO {
     }
 
     public ActivityCategory findById(int id) throws SQLException {
-        String sql = "SELECT id, name, description FROM activity_category WHERE id = ?";
+        String sql = "SELECT id, name, description, status FROM activity_category WHERE id = ?";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -38,7 +38,7 @@ public class ActivityCategoryDAO {
     }
 
     public int create(ActivityCategory category) throws SQLException {
-        String sql = "INSERT INTO activity_category (name, description) VALUES (?, ?)";
+        String sql = "INSERT INTO activity_category (name, description, status) VALUES (?, ?, 'active')";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, category.getName());
@@ -63,22 +63,11 @@ public class ActivityCategoryDAO {
     }
 
     public boolean delete(int id) throws SQLException {
-        String sql = "DELETE FROM activity_category WHERE id = ?";
+        String sql = "UPDATE activity_category SET status = 'deleted' WHERE id = ?";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            boolean deleted = stmt.executeUpdate() > 0;
-            if (deleted) {
-                // Reset auto-increment to the next available ID
-                try (Statement st = conn.createStatement()) {
-                    ResultSet rs = st.executeQuery("SELECT COALESCE(MAX(id), 0) + 1 FROM activity_category");
-                    if (rs.next()) {
-                        int nextId = rs.getInt(1);
-                        st.executeUpdate("ALTER TABLE activity_category AUTO_INCREMENT = " + nextId);
-                    }
-                }
-            }
-            return deleted;
+            return stmt.executeUpdate() > 0;
         }
     }
 
@@ -99,6 +88,7 @@ public class ActivityCategoryDAO {
         cat.setId(rs.getInt("id"));
         cat.setName(rs.getString("name"));
         cat.setDescription(rs.getString("description"));
+        cat.setStatus(rs.getString("status"));
         return cat;
     }
 }

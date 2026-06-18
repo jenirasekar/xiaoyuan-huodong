@@ -424,6 +424,18 @@ public class ActivityDAO {
         }
     }
 
+    public static int countByCategory(int categoryId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM activity WHERE category_id = ? AND status != 'deleted'";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, categoryId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
     /**
      * Get total activity count.
      */

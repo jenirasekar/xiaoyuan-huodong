@@ -10,6 +10,7 @@ public class ActivityCategory implements Serializable {
     private int id;
     private String name;
     private String description;
+    private String status;
 
     public ActivityCategory() {}
 
@@ -28,8 +29,11 @@ public class ActivityCategory implements Serializable {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
     @Override
     public String toString() {
-        return "ActivityCategory{id=" + id + ", name='" + name + "'}";
+        return "ActivityCategory{id=" + id + ", name='" + name + "', status='" + status + "'}";
     }
 }

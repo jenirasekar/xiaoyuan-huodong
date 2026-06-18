@@ -1,6 +1,7 @@
 package com.xiaoyuan.servlet;
 
 import com.xiaoyuan.dao.ActivityCategoryDAO;
+import com.xiaoyuan.dao.ActivityDAO;
 import com.xiaoyuan.model.ActivityCategory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
@@ -47,9 +48,7 @@ public class CategoryServlet extends HttpServlet {
                     req.getSession().setAttribute("successMessage", "Category saved successfully.");
                     break;
                 case "delete":
-                    int id = Integer.parseInt(req.getParameter("id"));
-                    categoryDAO.delete(id);
-                    req.getSession().setAttribute("successMessage", "Category deleted successfully.");
+                    deleteCategory(req);
                     break;
             }
         } catch (Exception e) {
@@ -78,5 +77,19 @@ public class CategoryServlet extends HttpServlet {
         } else {
             categoryDAO.update(category);
         }
+    }
+
+    private void deleteCategory(HttpServletRequest req) throws Exception {
+        int id = Integer.parseInt(req.getParameter("id"));
+
+        // Block if any live (non-deleted) activities still reference this category
+        int activityCount = ActivityDAO.countByCategory(id);
+        if (activityCount > 0) {
+            throw new IllegalStateException(
+                    "Cannot delete category — it still has " + activityCount + " activities linked to it.");
+        }
+
+        categoryDAO.delete(id);
+        req.getSession().setAttribute("successMessage", "Category deleted successfully.");
     }
 }

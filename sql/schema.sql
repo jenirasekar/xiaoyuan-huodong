@@ -35,7 +35,8 @@ CREATE TABLE user (
 CREATE TABLE activity_category (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    description VARCHAR(500)
+    description VARCHAR(500),
+    status ENUM('active', 'deleted') NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB;
 
 -- ============================================
